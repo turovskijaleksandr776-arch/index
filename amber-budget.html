@@ -1,0 +1,2367 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Янтарный бюджет</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F2F5F4; --surface:#FFFFFF; --surface-2:#EAF0EE; --border:#DCE6E3;
+    --ink:#0F1E1C; --ink-soft:#51655F; --ink-faint:#8DA097;
+    --accent:#0E9B85; --accent-ink:#F2FFFC;
+    --amber:#B9781F; --amber-soft:#F1E1C3;
+    --good:#1E9A63; --good-soft:#DBF3E5;
+    --warn:#B8860B; --warn-soft:#F3E7C4;
+    --danger:#C1432E; --danger-soft:#F6DAD3;
+    --blue:#2563C7; --blue-soft:#DCE7FB;
+    --purple:#7C3AED; --purple-soft:#ECE2FC;
+    --radius:14px;
+    --shadow:0 1px 2px rgba(10,20,18,.05), 0 10px 24px -18px rgba(10,20,18,.25);
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0A1211; --surface:#121C1A; --surface-2:#182422; --border:#223330;
+      --ink:#E7F1EE; --ink-soft:#93A6A1; --ink-faint:#5E7570;
+      --accent:#2FD5B7; --accent-ink:#04211C;
+      --amber:#E7B357; --amber-soft:#3A2C12;
+      --good:#3FCE8E; --good-soft:#123527;
+      --warn:#EFC24E; --warn-soft:#3A2F10;
+      --danger:#F0806A; --danger-soft:#3A1D18;
+      --blue:#6C9CF2; --blue-soft:#152743;
+      --purple:#B79BF7; --purple-soft:#241A3D;
+      --shadow:0 1px 2px rgba(0,0,0,.35), 0 10px 24px -18px rgba(0,0,0,.6);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0A1211; --surface:#121C1A; --surface-2:#182422; --border:#223330;
+    --ink:#E7F1EE; --ink-soft:#93A6A1; --ink-faint:#5E7570;
+    --accent:#2FD5B7; --accent-ink:#04211C;
+    --amber:#E7B357; --amber-soft:#3A2C12;
+    --good:#3FCE8E; --good-soft:#123527;
+    --warn:#EFC24E; --warn-soft:#3A2F10;
+    --danger:#F0806A; --danger-soft:#3A1D18;
+    --blue:#6C9CF2; --blue-soft:#152743;
+    --purple:#B79BF7; --purple-soft:#241A3D;
+    --shadow:0 1px 2px rgba(0,0,0,.35), 0 10px 24px -18px rgba(0,0,0,.6);
+    color-scheme: dark;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;}
+  body{
+    background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,-apple-system,sans-serif;
+    font-size:14px;line-height:1.5;
+  }
+  h1,h2,h3{font-family:'Inter',sans-serif;font-weight:700;letter-spacing:-.01em;text-wrap:balance;margin:0;}
+  .shell{display:flex;min-height:100vh;}
+
+  /* ---- Sidebar (deliberately dark in both themes) ---- */
+  .sidebar{
+    width:250px;flex-shrink:0;background:#080F0E;color:#D8E5E1;
+    display:flex;flex-direction:column;padding:18px 12px;gap:18px;
+    position:sticky;top:0;align-self:flex-start;height:100vh;overflow-y:auto;
+    border-right:1px solid rgba(255,255,255,.06);
+  }
+  .brand{display:flex;align-items:center;gap:10px;padding:4px 8px 8px;}
+  .brand .logo{
+    width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--accent),#0B6E5D);
+    display:flex;align-items:center;justify-content:center;color:#04211C;font-weight:800;font-size:15px;flex-shrink:0;
+  }
+  .brand .name{font-weight:700;font-size:15px;color:#F2F8F6;}
+  .brand .tag{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#7E938D;}
+  .nav{display:flex;flex-direction:column;gap:16px;flex:1;}
+  .nav-group-label{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#5D716C;padding:0 10px;margin-bottom:6px;}
+  .nav-items{display:flex;flex-direction:column;gap:2px;}
+  .nav-item{
+    display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:9px;color:#B9C9C4;
+    font-size:13px;font-weight:500;cursor:pointer;border:none;background:transparent;text-align:left;width:100%;
+  }
+  .nav-item svg{width:17px;height:17px;flex-shrink:0;opacity:.85;}
+  .nav-item:hover{background:rgba(255,255,255,.05);color:#F2F8F6;}
+  .nav-item.active{background:rgba(47,213,183,.14);color:#6FEBD3;}
+  .nav-item.active svg{opacity:1;}
+  .sidebar-footer{border-top:1px solid rgba(255,255,255,.08);padding-top:12px;display:flex;flex-direction:column;gap:8px;}
+  .sidebar-footer .month{font-size:13px;font-weight:600;color:#EAF3F0;}
+  .month-input{
+    font-size:13px;font-weight:600;color:#EAF3F0;background:transparent;border:none;
+    padding:0 0 2px;border-bottom:1px dashed rgba(255,255,255,.25);width:100%;
+  }
+  .month-input:focus{outline:none;border-bottom-color:var(--accent);}
+  .sidebar-footer .sub{font-size:11px;color:#7E938D;}
+  .sidebar-footer .row{display:flex;gap:10px;flex-wrap:wrap;}
+  .sidebar-footer .linkbtn{background:none;border:none;color:#7FE0CB;font-size:11px;font-weight:600;cursor:pointer;padding:0;text-decoration:underline;}
+  .sidebar-footer .linkbtn.danger{color:#F0A08E;}
+
+  /* ---- Main / header ---- */
+  .main{flex:1;min-width:0;display:flex;flex-direction:column;}
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+    padding:20px 28px;border-bottom:1px solid var(--border);
+  }
+  .topbar h1{font-size:24px;}
+  .topbar .sub{color:var(--ink-soft);font-size:13px;margin-top:3px;}
+  .top-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .clock{font-variant-numeric:tabular-nums;font-size:12px;color:var(--ink-soft);background:var(--surface-2);border:1px solid var(--border);border-radius:999px;padding:6px 12px;}
+  .pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:6px 12px;border-radius:999px;}
+  .pill.saved{background:var(--good-soft);color:var(--good);}
+  .pill .dot{width:6px;height:6px;border-radius:50%;background:currentColor;}
+  .icon-toggle{
+    width:34px;height:34px;border-radius:9px;border:1px solid var(--border);background:var(--surface);color:var(--ink-soft);
+    display:flex;align-items:center;justify-content:center;cursor:pointer;
+  }
+  .icon-toggle:hover{color:var(--accent);border-color:var(--accent);}
+  .icon-toggle svg{width:17px;height:17px;}
+  .content{padding:22px 28px 60px;display:flex;flex-direction:column;gap:18px;max-width:1180px;width:100%;}
+
+  .banner{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    background:var(--amber-soft);border:1px solid var(--amber);color:var(--ink);
+    border-radius:12px;padding:11px 16px;font-size:13px;
+  }
+  .banner.info{background:var(--surface-2);border-color:var(--border);}
+  .banner button{flex-shrink:0;}
+
+  .card{
+    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    padding:18px 20px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:14px;
+  }
+  .card h2{font-size:16px;}
+  .card .sub{color:var(--ink-soft);font-size:12.5px;margin-top:-8px;}
+  .card .total-line{display:flex;align-items:center;justify-content:space-between;padding-top:6px;border-top:1px solid var(--border);font-weight:700;font-size:14px;}
+  .card .total-line span.v{font-variant-numeric:tabular-nums;}
+
+  .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;}
+  @media (max-width:480px){ .stat-grid{grid-template-columns:1fr;} }
+  .stat-card{
+    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    padding:16px 18px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px;
+  }
+  .stat-card .head{display:flex;align-items:center;justify-content:space-between;}
+  .stat-card .label{font-size:12px;color:var(--ink-soft);}
+  .stat-card .chip{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .stat-card .chip svg{width:15px;height:15px;}
+  .chip.c-blue{background:var(--blue-soft);color:var(--blue);}
+  .chip.c-good{background:var(--good-soft);color:var(--good);}
+  .chip.c-amber{background:var(--amber-soft);color:var(--amber);}
+  .chip.c-purple{background:var(--purple-soft);color:var(--purple);}
+  .chip.c-danger{background:var(--danger-soft);color:var(--danger);}
+  .stat-card .value{font-weight:800;font-size:22px;font-variant-numeric:tabular-nums;}
+  .stat-card .trend{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;width:fit-content;}
+  .trend.bad{background:var(--danger-soft);color:var(--danger);}
+  .trend.ok{background:var(--good-soft);color:var(--good);}
+
+  .split-bar{display:flex;height:12px;border-radius:999px;overflow:hidden;border:1px solid var(--border);background:var(--surface-2);}
+  .split-bar span{height:100%;}
+  .split-legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--ink-soft);}
+  .split-legend .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;}
+
+  .two-col{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;align-items:start;}
+  @media (max-width:860px){ .two-col{grid-template-columns:1fr;} }
+  .grid-2x2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;align-items:start;}
+  @media (max-width:860px){ .grid-2x2{grid-template-columns:1fr;} }
+
+  .activity{display:flex;flex-direction:column;gap:4px;}
+  .activity-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);}
+  .activity-row:last-child{border-bottom:none;}
+  .activity-row .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .activity-row .desc{flex:1;min-width:0;}
+  .activity-row .desc strong{display:block;font-size:13px;font-weight:600;}
+  .activity-row .desc span{font-size:11.5px;color:var(--ink-faint);}
+  .activity-row .amt{font-variant-numeric:tabular-nums;font-weight:700;font-size:13px;flex-shrink:0;}
+  .activity-row .when{font-size:11px;color:var(--ink-faint);flex-shrink:0;width:64px;text-align:right;}
+  .empty{color:var(--ink-faint);font-size:13px;padding:18px 0;text-align:center;}
+
+  .rows{display:flex;flex-direction:column;gap:8px;}
+  .income-row{display:grid;grid-template-columns:1fr 130px 32px;gap:8px;align-items:center;}
+  .tx-row{display:grid;grid-template-columns:1fr 130px 150px 100px 32px;gap:8px;align-items:center;}
+  @media (max-width:720px){ .tx-row{grid-template-columns:1fr 1fr;} }
+  .add-tx-row{display:grid;grid-template-columns:1fr 120px 170px auto;gap:8px;align-items:center;}
+  .add-tx-row .btn, .inline-add .btn{white-space:nowrap;align-self:stretch;display:inline-flex;align-items:center;gap:6px;}
+  .add-tx-row .btn svg, .inline-add .btn svg{width:15px;height:15px;}
+  @media (max-width:720px){ .add-tx-row{grid-template-columns:1fr 1fr;} .add-tx-row .btn{grid-column:1 / -1;} }
+
+  .fixed-item{display:flex;flex-direction:column;gap:6px;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--surface-2);}
+  .fixed-item.is-paid{border-color:var(--good);}
+  .fixed-item .row1{display:grid;grid-template-columns:22px 1fr 130px 32px;gap:8px;align-items:center;}
+  .fixed-item .note-row{display:grid;grid-template-columns:1fr 32px;gap:8px;}
+  .paid-check{width:17px;height:17px;accent-color:var(--good);cursor:pointer;}
+  .paid-label{font-size:11px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;}
+  .paid-label.yes{color:var(--good);}
+  .paid-label.no{color:var(--warn);}
+  .fixed-item input.note{font-size:12px;color:var(--ink-soft);}
+
+  .sub-row{display:grid;grid-template-columns:22px 1fr 120px 32px;gap:8px;align-items:center;}
+  .inline-add{display:grid;grid-template-columns:1fr 120px auto;gap:8px;align-items:center;}
+  @media (max-width:560px){ .inline-add{grid-template-columns:1fr 1fr;} .inline-add .btn{grid-column:1 / -1;} }
+
+  .entity-card{border:1px solid var(--border);border-radius:12px;background:var(--surface-2);padding:14px 16px;display:flex;flex-direction:column;gap:10px;}
+  .entity-card .head-row{display:grid;grid-template-columns:1fr 32px;gap:8px;align-items:center;}
+  .entity-card .head-row input{font-weight:700;font-size:14px;text-align:left;}
+  .entity-card .fields{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+  @media (max-width:640px){ .entity-card .fields{grid-template-columns:1fr;} }
+
+  input[type=text], input[type=number], input[type=date], select{
+    border:1px solid var(--border);border-radius:8px;padding:8px 10px;background:var(--bg);color:var(--ink);font-size:13px;width:100%;
+  }
+  input[type=number]{font-variant-numeric:tabular-nums;font-weight:600;text-align:right;}
+  input:focus, select:focus{outline:2px solid var(--accent);outline-offset:1px;}
+  .iconbtn{
+    border:1px solid var(--border);background:var(--surface);color:var(--ink-soft);border-radius:8px;
+    width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;flex-shrink:0;
+  }
+  .iconbtn:hover{border-color:var(--danger);color:var(--danger);}
+  .btn{
+    border:1px solid var(--border);background:var(--surface-2);color:var(--ink);border-radius:9px;
+    padding:9px 14px;font-size:13px;font-weight:600;cursor:pointer;align-self:flex-start;
+  }
+  .btn:hover{border-color:var(--accent);color:var(--accent);}
+  .btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);}
+  .btn.primary:hover{opacity:.9;color:var(--accent-ink);}
+  .btn.ghost{background:transparent;}
+
+  .group-head{display:flex;align-items:center;justify-content:space-between;margin-top:4px;}
+  .group-head .tag{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:3px 9px;border-radius:999px;}
+  .tag.needs{background:var(--good-soft);color:var(--good);}
+  .tag.wants{background:var(--warn-soft);color:var(--warn);}
+  .tag.goals{background:var(--amber-soft);color:var(--amber);}
+  .tag.fixed{background:var(--blue-soft);color:var(--blue);}
+  .tag.monthly{background:var(--purple-soft);color:var(--purple);}
+  .tag.daily{background:var(--blue-soft);color:var(--blue);}
+  .group-head .amt{font-variant-numeric:tabular-nums;font-weight:600;color:var(--ink-soft);font-size:13px;}
+  .col-labels{display:grid;grid-template-columns:1fr 110px 110px 50px;gap:8px;font-size:11px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.04em;padding:0 2px;}
+  .col-labels span:not(:first-child){text-align:right;}
+  @media (max-width:560px){ .col-labels{display:none;} }
+  .cat-row{display:grid;grid-template-columns:1fr 110px 110px 50px;gap:8px;align-items:center;}
+  @media (max-width:560px){
+    .cat-row{grid-template-columns:1fr 1fr;grid-template-areas:"name name" "plan fact" "pct pct";row-gap:4px;}
+    .cat-row .cat-name{grid-area:name;}
+    .cat-row input{grid-area:plan;}
+    .cat-row .fact{grid-area:fact;}
+    .cat-row .pct{grid-area:pct;text-align:left;}
+  }
+  .cat-row .cat-name{display:flex;flex-direction:column;gap:1px;}
+  .cat-row .cat-name .delta{font-size:11px;font-variant-numeric:tabular-nums;}
+  .cat-row .cat-name .delta.over{color:var(--danger);}
+  .cat-row .cat-name .delta.under{color:var(--ink-faint);}
+  .cat-row .fact{font-weight:700;text-align:right;font-variant-numeric:tabular-nums;}
+  .pct{font-size:12px;color:var(--ink-faint);text-align:right;font-variant-numeric:tabular-nums;}
+
+  .split-targets{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+  @media (max-width:560px){ .split-targets{grid-template-columns:1fr;} }
+  .split-targets label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--ink-soft);}
+  .badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;width:fit-content;}
+  .badge.ok{background:var(--good-soft);color:var(--good);}
+  .badge.off{background:var(--warn-soft);color:var(--warn);}
+
+  .tips{display:flex;flex-direction:column;gap:10px;}
+  .tip{display:flex;gap:12px;padding:12px 14px;border:1px solid var(--border);border-radius:10px;background:var(--surface-2);}
+  .tip input[type=checkbox]{margin-top:3px;width:16px;height:16px;accent-color:var(--accent);flex-shrink:0;}
+  .tip .txt strong{display:block;font-size:13px;margin-bottom:2px;}
+  .tip .txt span{font-size:13px;color:var(--ink-soft);}
+  .tip.done{opacity:.6;}
+  .tip.done .txt strong{text-decoration:line-through;}
+
+  .progress{height:10px;border-radius:999px;background:var(--surface-2);border:1px solid var(--border);overflow:hidden;}
+  .progress > div{height:100%;background:var(--amber);}
+  .progress.accentbar > div{background:var(--accent);}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  @media (max-width:560px){ .field-row{grid-template-columns:1fr;} }
+  .field{display:flex;flex-direction:column;gap:4px;}
+  .field .flabel{font-size:12px;color:var(--ink-soft);}
+  .hint{font-size:12px;color:var(--ink-faint);}
+  .sched-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px;}
+  .sched{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums;white-space:nowrap;}
+  .sched th{position:sticky;top:0;background:var(--surface-2);color:var(--ink-soft);font-weight:600;text-align:right;padding:7px 10px;}
+  .sched td{text-align:right;padding:6px 10px;border-top:1px solid var(--border);}
+  .sched th:first-child,.sched td:first-child,.sched th:nth-child(2),.sched td:nth-child(2){text-align:left;}
+  .sched tr.done td{color:var(--ink-faint);}
+  .sched tr.next td{background:var(--surface-2);font-weight:700;}
+  .sched tr.extra td{color:var(--good);font-style:italic;}
+  .sched-scroll{max-height:380px;overflow-y:auto;}
+  .suggest-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .suggest-row .link{font-size:12px;font-weight:600;color:var(--accent);background:none;border:none;cursor:pointer;padding:0;text-decoration:underline;}
+
+  .checklist{display:flex;flex-direction:column;gap:8px;}
+  .check-item{display:flex;align-items:center;gap:10px;font-size:14px;}
+  .check-item input{width:17px;height:17px;accent-color:var(--good);flex-shrink:0;}
+  .check-item.done span{color:var(--ink-faint);text-decoration:line-through;}
+
+  .chatnote{display:flex;gap:10px;align-items:flex-start;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-size:12.5px;color:var(--ink-soft);}
+  .chatnote svg{width:16px;height:16px;flex-shrink:0;margin-top:1px;color:var(--accent);}
+
+  @media (max-width:860px){
+    .shell{flex-direction:column;}
+    .sidebar{width:100%;height:auto;position:relative;flex-direction:row;align-items:center;overflow-x:auto;padding:10px 12px;gap:14px;}
+    .nav{flex-direction:row;gap:10px;flex:none;}
+    .nav-group-label{display:none;}
+    .nav-items{flex-direction:row;gap:4px;}
+    .nav-item{white-space:nowrap;}
+    .sidebar-footer{display:none;}
+    .topbar{padding:16px;}
+    .content{padding:16px 16px 40px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="shell" id="shell"></div>
+
+<script>
+(function(){
+
+function uid(p){ return p + Math.random().toString(36).slice(2,8); }
+function fmt(n){ n = Math.round(n||0); return n.toLocaleString('ru-RU') + ' ₽'; }
+function pctFmt(n){ return (Math.round(n*10)/10) + '%'; }
+function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ---------------- Icons ----------------
+var ICONS = {
+  grid:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+  income:'<path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 17v2a1 1 0 001 1h14a1 1 0 001-1v-2"/>',
+  tag:'<path d="M3 11V4a1 1 0 011-1h7l9 9-8 8-9-9z"/><circle cx="7.5" cy="7.5" r="1.3"/>',
+  list:'<line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="14" y2="18"/>',
+  card:'<rect x="2" y="5" width="20" height="14" rx="2.5"/><line x1="2" y1="10" x2="22" y2="10"/>',
+  shield:'<path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/>',
+  trend:'<polyline points="3,17 9,11 13,15 21,6"/><polyline points="15,6 21,6 21,12"/>',
+  check:'<rect x="3" y="3" width="18" height="18" rx="4"/><polyline points="7,12 10,15 17,8"/>',
+  chart:'<line x1="4" y1="20" x2="4" y2="11"/><line x1="10" y1="20" x2="10" y2="4"/><line x1="16" y1="20" x2="16" y2="14"/><line x1="2" y1="20" x2="20" y2="20"/>',
+  lock:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/>',
+  flag:'<path d="M5 3v18"/><path d="M5 4h12l-2.5 4.5L17 13H5"/>',
+  sun:'<circle cx="12" cy="12" r="4.3"/><line x1="12" y1="1.5" x2="12" y2="4.2"/><line x1="12" y1="19.8" x2="12" y2="22.5"/><line x1="1.5" y1="12" x2="4.2" y2="12"/><line x1="19.8" y1="12" x2="22.5" y2="12"/><line x1="4.6" y1="4.6" x2="6.5" y2="6.5"/><line x1="17.5" y1="17.5" x2="19.4" y2="19.4"/><line x1="4.6" y1="19.4" x2="6.5" y2="17.5"/><line x1="17.5" y1="6.5" x2="19.4" y2="4.6"/>',
+  moon:'<path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/>',
+  chat:'<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>',
+  plus:'<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>'
+};
+function icon(name){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+(ICONS[name]||'')+'</svg>'; }
+
+// ---------------- Food basket data ----------------
+// Real prices from Пятёрочка and SPAR in Kaliningrad, 1-2 September 2026
+// (Новый Калининград.Ru, "Осеннее послабление: цены в Калининграде в сентябре").
+// Price used = average of the two chains for that exact item. Quantities are
+// a reasonable monthly estimate for 2 adults — edit the multiplier below to
+// cover items not itemized here (cheese, cold cuts, tea/coffee, spices, snacks).
+var FOOD_BASKET_SOURCE = 'Новый Калининград.Ru, 1–2 сентября 2026: цены в Пятёрочке и SPAR';
+var FOOD_BASKET_URL = 'https://www.newkaliningrad.ru/news/community/24163626-osennee-poslablenie-tseny-v-kaliningrade-v-sentyabre.html';
+var FOOD_BASKET = [
+  {name:'Хлеб (Дарницкий, 580 г)', qty:8, unit:'шт/мес', price:35.49},
+  {name:'Молоко 2.5% (800 мл)', qty:12, unit:'шт/мес', price:56.09},
+  {name:'Кефир 2.5% (800 мл)', qty:6, unit:'шт/мес', price:72.99},
+  {name:'Сметана 15% (315 г)', qty:4, unit:'шт/мес', price:89.99},
+  {name:'Творог 5% (200 г)', qty:6, unit:'шт/мес', price:129.99},
+  {name:'Куриное филе', qty:4, unit:'кг/мес', price:569.99},
+  {name:'Яйца (10 шт)', qty:4, unit:'уп/мес', price:119.99},
+  {name:'Рыбные котлеты (800 г)', qty:1, unit:'уп/мес', price:440, note:'ваша цена'},
+  {name:'Сырные палочки (1 кг)', qty:1, unit:'уп/мес', price:481, note:'ваша цена'},
+  {name:'Наггетсы (1 кг)', qty:1, unit:'уп/мес', price:385, note:'ваша цена'},
+  {name:'Котлеты куриные (1 кг)', qty:1, unit:'уп/мес', price:385, note:'ваша цена'},
+  {name:'Рис', qty:2, unit:'кг/мес', price:54.99},
+  {name:'Гречка', qty:2, unit:'кг/мес', price:61.99},
+  {name:'Макароны (450 г)', qty:4, unit:'шт/мес', price:78.49},
+  {name:'Сливочное масло (180 г)', qty:2, unit:'шт/мес', price:239.99},
+  {name:'Подсолнечное масло', qty:1.5, unit:'л/мес', price:199.99},
+  {name:'Сахар', qty:1.5, unit:'кг/мес', price:87.49},
+  {name:'Мука', qty:1, unit:'кг/мес', price:63.49},
+  {name:'Картофель', qty:6, unit:'кг/мес', price:51.99},
+  {name:'Лук', qty:2, unit:'кг/мес', price:92.49},
+  {name:'Капуста', qty:2, unit:'кг/мес', price:57.99},
+  {name:'Морковь', qty:2, unit:'кг/мес', price:69.99},
+  {name:'Огурцы', qty:2, unit:'кг/мес', price:134.99},
+  {name:'Помидоры', qty:3, unit:'кг/мес', price:124.99},
+  {name:'Яблоки', qty:4, unit:'кг/мес', price:144.99},
+  {name:'Бананы', qty:3, unit:'кг/мес', price:159.99},
+  {name:'Апельсины', qty:2, unit:'кг/мес', price:134.99}
+];
+function foodBasketStaplesTotal(){
+  return FOOD_BASKET.reduce(function(s,it){ return s + it.qty*it.price; }, 0);
+}
+function foodBasketAdjustedTotal(){
+  return foodBasketStaplesTotal() * (STATE.foodAnalytics.multiplier||1);
+}
+
+// ---------------- Pet food basket ----------------
+// Dog food: Dingo Pro dry food, ~2.5 kg bag, price from Пятёрочка via a price
+// aggregator (catalog-ceny.ru), dated Feb 2024 — may have risen since.
+// Degu food: Little One 400 g — «Мир Корма» in Kaliningrad has no public
+// online price list, so this is an average of other Russian pet-store prices
+// for the same product as a stand-in; correct it once you have a real receipt.
+function petAnalyticsTotal(){
+  return STATE.petAnalytics.items.reduce(function(s,it){ return s+(it.qty||0)*(it.price||0); }, 0);
+}
+
+// ---------------- Sberbank statement import (01.09–18.09.2026) ----------------
+// Only the lines that map to an obvious category (supermarket, fuel, pet
+// store, streaming/hosting subscription) or an obvious real-person income.
+// Bank-to-bank transfers (Совкомбанк, VTB, Альфа-Банк), cash deposits and
+// transfers to named people were deliberately left out — ask before
+// guessing what those were for.
+var STATEMENT_SBER_202609 = {
+  key: 'sber-2026-09-01_2026-09-18',
+  incomes: [
+    {label:'Зарплата', amount:31071.29},
+    {label:'Перевод от Екатерины (Т.)', amount:1500}
+  ],
+  transactions: [
+    {category:'food', description:'EUROSPAR 49', amount:270.00, addedAt:'2026-09-18T07:33:00'},
+    {category:'food', description:'EUROSPAR 49', amount:299.94, addedAt:'2026-09-18T07:33:00'},
+    {category:'food', description:'MANDARIN', amount:109.90, addedAt:'2026-09-17T17:06:00'},
+    {category:'food', description:'MANDARIN', amount:1286.50, addedAt:'2026-09-17T12:23:00'},
+    {category:'food', description:'INTERSPAR 100', amount:79.99, addedAt:'2026-09-16T00:00:00'},
+    {category:'food', description:'PYATEROCHKA', amount:1088.88, addedAt:'2026-09-16T17:21:00'},
+    {category:'food', description:'MANDARIN', amount:298.90, addedAt:'2026-09-16T09:24:00'},
+    {category:'food', description:'VIKTORIYA 26253', amount:423.96, addedAt:'2026-09-15T16:55:00'},
+    {category:'food', description:'MANDARIN', amount:299.70, addedAt:'2026-09-13T20:09:00'},
+    {category:'food', description:'MANDARIN', amount:129.90, addedAt:'2026-09-13T17:42:00'},
+    {category:'food', description:'MANDARIN', amount:173.80, addedAt:'2026-09-13T12:21:00'},
+    {category:'food', description:'BALTMAG', amount:150.00, addedAt:'2026-09-12T00:00:00'},
+    {category:'food', description:'MANDARIN', amount:199.80, addedAt:'2026-09-13T10:15:00'},
+    {category:'food', description:'VIKTORIYA', amount:788.37, addedAt:'2026-09-12T19:23:00'},
+    {category:'food', description:'MANDARIN', amount:105.05, addedAt:'2026-09-12T18:24:00'},
+    {category:'food', description:'INTERSPAR 100', amount:49.99, addedAt:'2026-09-11T00:00:00'},
+    {category:'food', description:'MANDARIN', amount:199.80, addedAt:'2026-09-12T09:57:00'},
+    {category:'food', description:'MANDARIN', amount:997.85, addedAt:'2026-09-11T17:16:00'},
+    {category:'food', description:'PYATEROCHKA', amount:163.98, addedAt:'2026-09-11T16:15:00'},
+    {category:'food', description:'MANDARIN', amount:259.70, addedAt:'2026-09-10T21:25:00'},
+    {category:'food', description:'VIKTORIYA', amount:1955.69, addedAt:'2026-09-10T18:04:00'},
+    {category:'food', description:'BRISTOL 5254', amount:89.99, addedAt:'2026-09-10T13:34:00'},
+    {category:'food', description:'INTERSPAR 100', amount:199.97, addedAt:'2026-09-09T00:00:00'},
+    {category:'food', description:'INTERSPAR 100', amount:139.98, addedAt:'2026-09-09T00:01:00'},
+    {category:'food', description:'MANDARIN', amount:105.05, addedAt:'2026-09-09T18:31:00'},
+    {category:'food', description:'BRISTOL 5254', amount:99.99, addedAt:'2026-09-03T10:07:00'},
+    {category:'food', description:'PYATEROCHKA 24559', amount:59.99, addedAt:'2026-09-02T12:56:00'},
+    {category:'food', description:'PYATEROCHKA 24559', amount:59.99, addedAt:'2026-09-02T11:40:00'},
+    {category:'food', description:'EUROSPAR 124', amount:89.99, addedAt:'2026-09-01T13:25:00'},
+    {category:'food', description:'BUTYL', amount:69.99, addedAt:'2026-08-31T00:00:00'},
+    {category:'food', description:'EUROSPAR 93', amount:279.92, addedAt:'2026-08-31T00:01:00'},
+
+    {category:'transport', description:'АЗС Orlovka', amount:1994.00, addedAt:'2026-09-16T12:31:00'},
+    {category:'transport', description:'Автозаправка Московский-2', amount:1100.03, addedAt:'2026-09-12T10:23:00'},
+    {category:'transport', description:'АЗС 23 Gvardeysk', amount:999.26, addedAt:'2026-09-10T00:00:00'},
+    {category:'car-other', description:'Autodoc.ru (автозапчасти)', amount:1787.00, addedAt:'2026-09-01T13:00:00'},
+
+    {category:'pets', description:'Мир Корма', amount:211.80, addedAt:'2026-09-12T18:50:00'},
+
+    {category:'fun', description:'Шашлычкофф', amount:1899.00, addedAt:'2026-09-12T20:54:00'},
+    {category:'fun', description:'Пивной Двор', amount:155.00, addedAt:'2026-09-11T16:11:00'},
+    {category:'fun', description:'Fix Price', amount:279.00, addedAt:'2026-09-12T18:54:00'},
+    {category:'fun', description:'Кафе (IP Ramus)', amount:139.00, addedAt:'2026-09-05T00:00:00'},
+    {category:'subscriptions', description:'Яндекс Музыка Премиум', amount:399.00, addedAt:'2026-09-10T20:46:00'},
+    {category:'subscriptions', description:'Boosty подписка', amount:490.00, addedAt:'2026-09-11T22:59:00'},
+    {category:'subscriptions', description:'PlayPass', amount:2187.00, addedAt:'2026-09-11T18:59:00'},
+    {category:'fun', description:'Kvaligate (не опознано)', amount:420.00, addedAt:'2026-09-13T21:22:00'},
+    {category:'household', description:'Хозтовары (OOO Grand)', amount:50.00, addedAt:'2026-09-16T18:24:00'},
+
+    {category:'vpn', description:'ADMIN VPS', amount:499.00, addedAt:'2026-09-17T15:59:00'},
+    {category:'vpn', description:'ADMIN VPS', amount:171.60, addedAt:'2026-09-13T09:55:00'},
+    {category:'vpn', description:'HSHP Hosting', amount:300.00, addedAt:'2026-09-11T22:34:00'}
+  ]
+};
+
+// Follow-up corrections to the September import, from your answers about
+// what the ambiguous transfers actually were.
+var STATEMENT_SBER_202609_ADJ = {
+  key: 'sber-2026-09-adjustments-1',
+  removeIncomeLabels: ['Перевод от Екатерины (Т.)'],
+  addIncomes: [
+    {label:'Зарплата жены (перевод с Альфа-Банка)', amount:19000},
+    {label:'Наличные (зарплата)', amount:32500}
+  ],
+  addTransactions: [
+    {category:'car-other', description:'Николай — масло для авто', amount:4000, addedAt:'2026-09-17T12:14:00'},
+    {category:'car-other', description:'Перевод на свой счёт — расходы на машину', amount:5307.13, addedAt:'2026-09-09T17:53:00'},
+    {category:'food', description:'Компенсация от Екатерины (часть чека ~3000 ₽)', amount:-1500, addedAt:'2026-09-15T16:17:00'}
+  ],
+  fixedUpdates: [
+    {name:'Ипотека', amount:14000},
+    {name:'Кредит на машину', amount:13800}
+  ]
+};
+
+// ---------------- Alfa-Bank statements — wife's cards (01.09–18.09.2026) ----------------
+// Only real store purchases (CRD_ card operations / SBP payments to a
+// merchant). Everything that was a transfer between accounts, a "транш"
+// credit-card draw matching a purchase 1:1, an SBP transfer to a phone
+// number, or income was deliberately left out — the person already entered
+// income themselves. Gosuslugi (385₽) and a bank insurance fee (1996.49₽)
+// were left uncategorized too — not store purchases.
+var STATEMENT_ALFA_WIFE_202609 = {
+  key: 'alfa-wife-2026-09-01_2026-09-18',
+  transactions: [
+    {category:'food', description:'Виктория 26253', amount:336.00, addedAt:'2026-08-29T00:00:00'},
+    {category:'food', description:'Виктория 26253', amount:733.09, addedAt:'2026-08-29T00:01:00'},
+    {category:'food', description:'Mandarin', amount:555.70, addedAt:'2026-08-29T00:02:00'},
+    {category:'food', description:'Mandarin', amount:497.00, addedAt:'2026-08-31T00:00:00'},
+    {category:'food', description:'Mandarin', amount:700.80, addedAt:'2026-09-01T00:00:00'},
+    {category:'food', description:'Mandarin', amount:43.70, addedAt:'2026-09-01T00:01:00'},
+    {category:'food', description:'Mandarin', amount:403.90, addedAt:'2026-09-03T00:00:00'},
+    {category:'food', description:'Metro Store 1068', amount:1267.00, addedAt:'2026-09-05T00:00:00'},
+    {category:'food', description:'Mandarin', amount:358.79, addedAt:'2026-09-05T00:01:00'},
+    {category:'food', description:'Fruktomaniya (Kutuzovo)', amount:948.90, addedAt:'2026-09-05T00:02:00'},
+    {category:'food', description:'Mandarin', amount:206.95, addedAt:'2026-09-06T00:00:00'},
+    {category:'food', description:'Виктория 26253', amount:1114.28, addedAt:'2026-09-06T00:01:00'},
+    {category:'food', description:'Mandarin', amount:99.90, addedAt:'2026-09-07T00:00:00'},
+    {category:'food', description:'SPAR 137', amount:631.29, addedAt:'2026-09-07T00:01:00'},
+    {category:'food', description:'ООО ГК Атлантис (Совхозное)', amount:3007.00, addedAt:'2026-09-13T00:00:00'},
+    {category:'food', description:'Mandarin', amount:64.90, addedAt:'2026-08-30T00:00:00'},
+    {category:'food', description:'Пятёрочка', amount:119.98, addedAt:'2026-08-31T00:01:00'},
+    {category:'food', description:'Mandarin', amount:135.60, addedAt:'2026-09-07T00:02:00'},
+    {category:'food', description:'Mandarin', amount:1899.70, addedAt:'2026-09-07T00:03:00'},
+    {category:'food', description:'Пятёрочка', amount:188.85, addedAt:'2026-09-09T00:00:00'},
+    {category:'food', description:'Мандарин (СБП)', amount:224.80, addedAt:'2026-09-11T00:00:00'},
+    {category:'food', description:'Eurospar 49', amount:122.23, addedAt:'2026-09-09T00:01:00'},
+    {category:'food', description:'Mandarin', amount:257.97, addedAt:'2026-09-08T00:00:00'},
+    {category:'food', description:'ГК Светофор', amount:699.18, addedAt:'2026-09-09T00:02:00'},
+    {category:'food', description:'KDV Розница', amount:92.00, addedAt:'2026-09-09T00:03:00'},
+    {category:'food', description:'Пятёрочка 3435', amount:79.99, addedAt:'2026-09-11T00:01:00'},
+    {category:'food', description:'ИП Паукова (Южный)', amount:285.00, addedAt:'2026-09-12T00:00:00'},
+    {category:'food', description:'Пятёрочка', amount:499.95, addedAt:'2026-09-13T00:01:00'},
+    {category:'food', description:'Пятёрочка (holD, ожидает подтверждения)', amount:165.97, addedAt:'2026-09-16T00:00:00'},
+
+    {category:'transport', description:'ООО Транском', amount:38.00, addedAt:'2026-08-31T00:02:00'},
+    {category:'transport', description:'ООО Транском', amount:38.00, addedAt:'2026-08-31T00:03:00'},
+    {category:'transport', description:'ООО Транском', amount:38.00, addedAt:'2026-09-14T00:00:00'},
+
+    {category:'fun', description:'Kenigsbekker', amount:455.00, addedAt:'2026-08-31T00:04:00'},
+    {category:'fun', description:'Kenigsbekker', amount:200.00, addedAt:'2026-09-09T00:04:00'},
+    {category:'fun', description:'Туалет (Шевцово)', amount:40.00, addedAt:'2026-08-31T00:05:00'},
+
+    {category:'communication', description:'Билайн', amount:100.00, addedAt:'2026-09-07T14:08:00'},
+    {category:'communication', description:'Билайн', amount:50.00, addedAt:'2026-09-02T08:45:00'},
+    {category:'communication', description:'Билайн', amount:100.00, addedAt:'2026-09-10T08:13:00'},
+    {category:'communication', description:'Билайн', amount:100.00, addedAt:'2026-09-15T08:05:00'},
+
+    {category:'health', description:'Центр здоровья', amount:3500.00, addedAt:'2026-08-31T00:06:00'},
+    {category:'health', description:'Аптека', amount:5503.00, addedAt:'2026-08-31T00:07:00'},
+    {category:'health', description:'Домашняя аптека', amount:4135.20, addedAt:'2026-09-01T00:02:00'}
+  ]
+};
+
+// Empty loan panels pre-named after your three loans, with today's known
+// monthly payments as an override so totals stay right until you fill in
+// amount / rate / date / term and the site calculates the schedule itself.
+function defaultLoans(){
+  return [
+    {id:uid('loan'), name:'Ипотека', amount:0, rate:0, startDate:'', termMonths:0, paymentOverride:14000},
+    {id:uid('loan'), name:'Кредит на машину', amount:0, rate:0, startDate:'', termMonths:0, paymentOverride:13800},
+    {id:uid('loan'), name:'Кредит на ремонт', amount:0, rate:0, startDate:'', termMonths:0, paymentOverride:16000}
+  ];
+}
+
+// ---------------- State ----------------
+function defaultState(){
+  return {
+    month: "Сентябрь 2026",
+    history: [],
+    statementImports: [],
+    autoAlloc: null,
+    foodAnalytics:{multiplier:1.3},
+    petAnalytics:{items:[
+      {id:uid('pet'), name:'Корм для собаки Dingo Pro (сухой)', store:'Пятёрочка', qty:3, unit:'уп/мес', price:419.99},
+      {id:uid('pet'), name:'Корм для дегу Little One (400 г)', store:'Мир Корма', qty:2, unit:'уп/мес', price:190}
+    ]},
+    incomes: [{id:uid('inc'),label:'Доход 1',amount:0}],
+    splitTargets:{needs:50, wants:20, goals:30},
+    categories:[
+      {id:'food',name:'Еда',group:'needs',freq:'monthly',amount:0},
+      {id:'pets',name:'Питомцы (собака + дегу)',group:'needs',freq:'monthly',amount:0},
+      {id:'household',name:'Хозтовары',group:'needs',freq:'monthly',amount:0},
+      {id:'health',name:'Здоровье (аптека, врачи)',group:'needs',freq:'monthly',amount:0},
+      {id:'communication',name:'Мобильная связь',group:'needs',freq:'monthly',amount:0},
+      {id:'internet',name:'Интернет',group:'needs',freq:'monthly',amount:0},
+      {id:'vpn',name:'VPN',group:'needs',freq:'monthly',amount:0},
+      {id:'subscriptions',name:'Подписки',group:'needs',freq:'monthly',amount:0},
+      {id:'transport',name:'Транспорт (бензин)',group:'needs',freq:'daily',amount:8000},
+      {id:'car-other',name:'Траты на авто (не бензин)',group:'needs',freq:'daily',amount:0},
+      {id:'kids',name:'Дети',group:'needs',freq:'daily',amount:0},
+      {id:'personal-sasha',name:'Личные траты — Саша',group:'needs',freq:'daily',amount:10500},
+      {id:'personal-anya',name:'Личные траты — Аня',group:'needs',freq:'daily',amount:10500},
+      {id:'fun',name:'Развлечения',group:'wants',freq:'daily',amount:0}
+    ],
+    transactions: [],
+    fixedExpenses:{
+      items:[
+        {id:uid('fx'), name:'Кредиты', amount:43800, note:'Ипотека + кредит на машину + кредит на ремонт (ремонт — последний платёж в ноябре 2026)', paid:false},
+        {id:uid('fx'), name:'Аренда гаража', amount:6000, note:'', paid:false}
+      ],
+      subscriptions: [],
+      carPercent: 10
+    },
+    debts:[
+      {id:uid('debt'), name:'Кредитная карта (моя)', limit:40000, available:0, payment:0, paid:false},
+      {id:uid('debt'), name:'Кредитная карта (жены)', limit:220000, available:0, payment:0, paid:false}
+    ],
+    loans: defaultLoans(),
+    savingsGoals:[
+      {id:uid('goal'), name:'Участок', target:150000, current:0, contribution:0, deadline:'', paid:false},
+      {id:uid('goal'), name:'Отпуск', target:150000, current:0, contribution:0, deadline:'', paid:false}
+    ],
+    cushionGoal:{current:0, targetMonths:3, contribution:0, paid:false},
+    tips:[
+      {id:'t1', title:'Связь — семейный тариф', text:'Объединить SIM в один семейный/комбо-тариф — часто дешевле пары отдельных. Экономия ≈ 300–600 ₽/мес.', done:false},
+      {id:'t2', title:'Еда — дискаунтеры и список покупок', text:'Часть закупок перенести в дискаунтеры и меньше доставки/кафе. Обычно даёт минус 10–15% от категории «Еда».', done:false},
+      {id:'t3', title:'Подписки — ревизия раз в квартал', text:'Проверяйте раздел «Обязательные расходы → Подписки» — сервисы, которыми не пользуетесь, легко накапливаются незаметно.', done:false},
+      {id:'t4', title:'Свободный остаток — на цели, а не «про запас»', text:'Пока не закрыты кредитные карты, свободный остаток месяца выгоднее направлять на них — проценты по картам обычно дороже, чем даёт любой вклад.', done:false}
+    ],
+    checklist:[
+      {id:'c1', text:'Все обязательные платежи внесены вовремя', done:false},
+      {id:'c2', text:'Суммы по категориям сверены с фактом', done:false},
+      {id:'c3', text:'Платежи по кредитным картам отправлены', done:false},
+      {id:'c4', text:'Пополнение подушки сделано', done:false},
+      {id:'c5', text:'Взносы по целям (участок / отпуск) сделаны', done:false},
+      {id:'c6', text:'Все поступления за месяц внесены и сверены', done:false}
+    ]
+  };
+}
+
+var STORAGE_KEY = 'amber-budget-v2';
+var THEME_KEY = 'amber-budget-theme';
+
+// Categories a saved state might predate — added here so older saves pick
+// them up without losing anything else the person already entered.
+var CATEGORY_MIGRATIONS = [
+  {id:'pets', name:'Питомцы (собака + дегу)', group:'needs', freq:'monthly', amount:0},
+  {id:'internet', name:'Интернет', group:'needs', freq:'monthly', amount:0},
+  {id:'vpn', name:'VPN', group:'needs', freq:'monthly', amount:0},
+  {id:'household', name:'Хозтовары', group:'needs', freq:'monthly', amount:0},
+  {id:'health', name:'Здоровье (аптека, врачи)', group:'needs', freq:'monthly', amount:0},
+  {id:'subscriptions', name:'Подписки', group:'needs', freq:'monthly', amount:0},
+  {id:'car-other', name:'Траты на авто (не бензин)', group:'needs', freq:'daily', amount:0}
+];
+var MONTHLY_CATEGORY_IDS = ['food','pets','communication','internet','vpn','household','health','subscriptions'];
+function migrateState(p){
+  var haveIds = p.categories.map(function(c){return c.id;});
+  CATEGORY_MIGRATIONS.forEach(function(def){
+    if(haveIds.indexOf(def.id)===-1) p.categories.push({id:def.id,name:def.name,group:def.group,freq:def.freq,amount:def.amount});
+  });
+  // Replaced the single shared "daily-allowance" category with two named
+  // personal allowances (350/day each = 10500/mo) — carry over its amount
+  // (split in half) if it had one, then drop it.
+  var oldAllowance = p.categories.filter(function(c){return c.id==='daily-allowance';})[0];
+  p.categories = p.categories.filter(function(c){return c.id!=='daily-allowance';});
+  haveIds = p.categories.map(function(c){return c.id;});
+  var perPerson = oldAllowance && oldAllowance.amount ? Math.round(oldAllowance.amount/2) : 10500;
+  if(haveIds.indexOf('personal-sasha')===-1) p.categories.push({id:'personal-sasha', name:'Личные траты — Саша', group:'needs', freq:'daily', amount:perPerson});
+  if(haveIds.indexOf('personal-anya')===-1) p.categories.push({id:'personal-anya', name:'Личные траты — Аня', group:'needs', freq:'daily', amount:perPerson});
+  // Old combined "Связь и интернет" category becomes "Мобильная связь" now that
+  // internet/VPN are tracked separately — keeps the id (and any transactions
+  // tagged to it) and whatever amount was already there.
+  var comm = p.categories.filter(function(c){return c.id==='communication';})[0];
+  if(comm && comm.name && comm.name.indexOf('Мобильная')===-1) comm.name = 'Мобильная связь';
+  // Fuel spending you told me about (~8000/month) — only fills it in if you
+  // hadn't already set your own number for "Транспорт".
+  var transport = p.categories.filter(function(c){return c.id==='transport';})[0];
+  if(transport){
+    if(transport.name==='Транспорт') transport.name = 'Транспорт (бензин)';
+    if(!transport.amount) transport.amount = 8000;
+  }
+  p.categories.forEach(function(c){
+    if(!c.freq) c.freq = MONTHLY_CATEGORY_IDS.indexOf(c.id)>-1 ? 'monthly' : 'daily';
+  });
+  if(!p.foodAnalytics) p.foodAnalytics = {multiplier:1.3};
+  if(!p.petAnalytics) p.petAnalytics = {items:[
+    {id:uid('pet'), name:'Корм для собаки Dingo Pro (сухой)', store:'Пятёрочка', qty:3, unit:'уп/мес', price:419.99},
+    {id:uid('pet'), name:'Корм для дегу Little One (400 г)', store:'Мир Корма', qty:2, unit:'уп/мес', price:190}
+  ]};
+  if(!p.history) p.history = [];
+  if(!p.loans) p.loans = defaultLoans();
+
+  // Fixed items/subscriptions now need a "paid" confirmation before they
+  // count toward actual spending — default existing ones to unpaid.
+  p.fixedExpenses.items.forEach(function(it){ if(it.paid===undefined) it.paid=false; });
+  p.fixedExpenses.subscriptions.forEach(function(it){ if(it.paid===undefined) it.paid=false; });
+  // Cards used to store debt directly (original/remaining, typed in by hand).
+  // Now you enter limit + available (what your bank app already shows) and
+  // debt is derived — convert old cards over, keeping today's debt the same.
+  p.debts.forEach(function(d){
+    if(d.limit===undefined){
+      var lim = d.original || d.remaining || 0;
+      if(lim < (d.remaining||0)) lim = d.remaining||0;
+      d.limit = lim;
+      d.available = Math.max(0, lim - (d.remaining||0));
+    }
+  });
+  // Same confirmation for card payments / goal contributions / cushion top-up.
+  p.debts.forEach(function(d){ if(d.paid===undefined) d.paid=false; });
+  p.savingsGoals.forEach(function(g){ if(g.paid===undefined) g.paid=false; if(g.deadline===undefined) g.deadline=''; });
+  if(p.cushionGoal.paid===undefined) p.cushionGoal.paid=false;
+
+  // Household goods were mistakenly imported under "Развлечения" — move
+  // them to their own "Хозтовары" category, wherever they already landed.
+  p.transactions.forEach(function(t){
+    if(t.description==='Хозтовары (OOO Grand)') t.category='household';
+  });
+
+  // New "Подписки" / "Траты на авто (не бензин)" categories — move
+  // already-imported entries that actually belong there.
+  var TO_SUBSCRIPTIONS = ['Яндекс Музыка Премиум','Boosty подписка','PlayPass'];
+  var TO_CAR_OTHER = ['Николай — масло для авто','Перевод на свой счёт — расходы на машину','Autodoc.ru (автозапчасти)'];
+  p.transactions.forEach(function(t){
+    if(TO_SUBSCRIPTIONS.indexOf(t.description)>-1) t.category='subscriptions';
+    if(TO_CAR_OTHER.indexOf(t.description)>-1) t.category='car-other';
+  });
+
+  // One-time import from the Sberbank statement (01.09–18.09.2026) you sent —
+  // only the clearly-identifiable food/transport/pets/subscriptions/salary
+  // lines. Bank-to-bank transfers, cash deposits and transfers to named
+  // people were left out on purpose — see chat for what needs your call.
+  // Guarded so it never re-applies, and skipped if you've since moved past
+  // September so it doesn't land in the wrong month.
+  if(!p.statementImports) p.statementImports = [];
+  if(p.statementImports.indexOf(STATEMENT_SBER_202609.key)===-1 && p.month==='Сентябрь 2026'){
+    if(p.incomes.length===1 && (p.incomes[0].amount||0)===0){
+      p.incomes = [];
+    }
+    STATEMENT_SBER_202609.incomes.forEach(function(inc){
+      p.incomes.push({id:uid('inc'), label:inc.label, amount:inc.amount});
+    });
+    STATEMENT_SBER_202609.transactions.forEach(function(tx){
+      p.transactions.push({id:uid('tx'), description:tx.description, amount:tx.amount, category:tx.category, addedAt:tx.addedAt});
+    });
+    p.statementImports.push(STATEMENT_SBER_202609.key);
+  }
+
+  if(p.statementImports.indexOf(STATEMENT_SBER_202609.key)>-1 && p.statementImports.indexOf(STATEMENT_SBER_202609_ADJ.key)===-1){
+    p.incomes = p.incomes.filter(function(inc){ return STATEMENT_SBER_202609_ADJ.removeIncomeLabels.indexOf(inc.label)===-1; });
+    STATEMENT_SBER_202609_ADJ.addIncomes.forEach(function(inc){
+      p.incomes.push({id:uid('inc'), label:inc.label, amount:inc.amount});
+    });
+    STATEMENT_SBER_202609_ADJ.addTransactions.forEach(function(tx){
+      p.transactions.push({id:uid('tx'), description:tx.description, amount:tx.amount, category:tx.category, addedAt:tx.addedAt});
+    });
+    STATEMENT_SBER_202609_ADJ.fixedUpdates.forEach(function(upd){
+      var item = p.fixedExpenses.items.filter(function(it){ return it.name===upd.name; })[0];
+      if(item) item.amount = upd.amount;
+    });
+    p.statementImports.push(STATEMENT_SBER_202609_ADJ.key);
+  }
+
+  if(p.statementImports.indexOf(STATEMENT_ALFA_WIFE_202609.key)===-1 && p.month==='Сентябрь 2026'){
+    STATEMENT_ALFA_WIFE_202609.transactions.forEach(function(tx){
+      p.transactions.push({id:uid('tx'), description:tx.description, amount:tx.amount, category:tx.category, addedAt:tx.addedAt});
+    });
+    p.statementImports.push(STATEMENT_ALFA_WIFE_202609.key);
+  }
+
+  // Merge "Ипотека" + "Кредит на машину" + "Кредит на ремонт" into one
+  // "Кредиты" line, once — keeps their combined amount and notes.
+  if(p.statementImports.indexOf('merge-credits-2026-09')===-1){
+    var creditNames = ['Ипотека','Кредит на машину','Кредит на ремонт'];
+    var creditItems = p.fixedExpenses.items.filter(function(it){ return creditNames.indexOf(it.name)>-1; });
+    if(creditItems.length>0){
+      var creditSum = creditItems.reduce(function(s,it){ return s+(it.amount||0); }, 0);
+      var creditNotes = creditItems.map(function(it){ return it.note; }).filter(Boolean);
+      var firstIdx = p.fixedExpenses.items.indexOf(creditItems[0]);
+      p.fixedExpenses.items = p.fixedExpenses.items.filter(function(it){ return creditNames.indexOf(it.name)===-1; });
+      p.fixedExpenses.items.splice(firstIdx, 0, {
+        id: uid('fx'), name:'Кредиты', amount: creditSum,
+        note: creditNotes.length ? creditNotes.join('; ') : 'Ипотека + кредит на машину + кредит на ремонт'
+      });
+    }
+    p.statementImports.push('merge-credits-2026-09');
+  }
+
+  return p;
+}
+
+function loadState(){
+  try{
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      var p = JSON.parse(raw);
+      if(p && p.incomes && p.categories && p.fixedExpenses && p.debts && p.savingsGoals) return migrateState(p);
+    }
+  }catch(e){}
+  return defaultState();
+}
+
+var STATE = loadState();
+var currentPage = 'dashboard';
+var lastSavedAt = null;
+
+function saveState(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(STATE));
+    lastSavedAt = new Date();
+    return true;
+  }catch(e){ return false; }
+}
+
+// ---------------- Computations ----------------
+function totalIncome(){ return STATE.incomes.reduce(function(s,i){return s+(i.amount||0);},0); }
+function catSum(group){ return STATE.categories.filter(function(c){return c.group===group;}).reduce(function(s,c){return s+(c.amount||0);},0); }
+function txForCat(id){ return STATE.transactions.filter(function(t){return t.category===id;}); }
+function txSumCat(id){ return txForCat(id).reduce(function(s,t){return s+(t.amount||0);},0); }
+function txTotal(){ return STATE.transactions.reduce(function(s,t){return s+(t.amount||0);},0); }
+
+function fixedItemsTotal(){ return STATE.fixedExpenses.items.reduce(function(s,i){return s+(i.amount||0);},0); }
+function subscriptionsTotal(){ return STATE.fixedExpenses.subscriptions.reduce(function(s,i){return s+(i.amount||0);},0); }
+function carPersonalAmount(){ return totalIncome() * ((STATE.fixedExpenses.carPercent||0)/100); }
+function fixedTotal(){ return fixedItemsTotal() + subscriptionsTotal() + carPersonalAmount(); }
+
+// Planned (fixedTotal) is always reserved in the budget/autoDistribute, so a
+// bill still gets money set aside before you've confirmed paying it. The
+// "actual" versions below only count items ticked as paid — used wherever we
+// report real spending (dashboard "Факт", financial score, month archive).
+function fixedItemsPaidTotal(){ return STATE.fixedExpenses.items.filter(function(i){return i.paid;}).reduce(function(s,i){return s+(i.amount||0);},0); }
+function subscriptionsPaidTotal(){ return STATE.fixedExpenses.subscriptions.filter(function(i){return i.paid;}).reduce(function(s,i){return s+(i.amount||0);},0); }
+function fixedActualTotal(){ return fixedItemsPaidTotal() + subscriptionsPaidTotal() + carPersonalAmount(); }
+
+function debtsPaymentTotal(){ return STATE.debts.reduce(function(s,d){return s+(d.payment||0);},0); }
+// Debt is derived, not typed in directly: limit minus what's currently available,
+// exactly like a bank app shows it. Paying down the card frees up "available".
+function debtAmount(d){ return Math.max(0, (d.limit||0)-(d.available||0)); }
+function debtsRemainingTotal(){ return STATE.debts.reduce(function(s,d){return s+debtAmount(d);},0); }
+function goalsContribTotal(){ return STATE.savingsGoals.reduce(function(s,g){return s+(g.contribution||0);},0); }
+
+function needsGroupTotal(){ return fixedTotal() + catSum('needs'); }
+function wantsGroupTotal(){ return catSum('wants'); }
+function goalsGroupTotal(){ return debtsPaymentTotal() + goalsContribTotal() + (STATE.cushionGoal.contribution||0); }
+function totalPlanned(){ return needsGroupTotal() + wantsGroupTotal() + goalsGroupTotal(); }
+
+// Monthly amount a dated goal needs to be full by its date (null: no date or
+// already full). One contribution per month, this month included.
+function goalMonthlyNeed(g){
+  var dl = parseISODate(g.deadline);
+  var remaining = Math.max(0, (g.target||0)-(g.current||0));
+  if(!dl || remaining<=0) return null;
+  var today = new Date(); today.setHours(0,0,0,0);
+  var daysLeft = Math.round((dl-today)/86400000);
+  var months = daysLeft>0 ? Math.max(1, Math.ceil(daysLeft/30.4375)) : 1;
+  return {need:remaining/months, months:months, daysLeft:daysLeft, remaining:remaining, urgent:daysLeft<=92};
+}
+
+// Goal dates/targets change the plan, so re-run it — but never wipe payments
+// the user has already confirmed with a checkbox this month.
+function redistributeIfUnconfirmed(){
+  if(totalIncome()<=0) return;
+  var confirmed = STATE.debts.some(function(d){return d.paid;}) ||
+    STATE.savingsGoals.some(function(g){return g.paid;}) || STATE.cushionGoal.paid;
+  if(!confirmed) autoDistribute();
+}
+
+// ---------------- Auto-distribute income by priority ----------------
+// Priority order: 1) fixed obligations, 2) everyday needs (food, transport,
+// communication, kids, pets) + entertainment — all protected, never
+// auto-changed; 3) from what's left — credit card debts, 4) savings goals,
+// 5) cushion. Runs whenever total income changes.
+function autoDistribute(){
+  var income = totalIncome();
+  var fixed = fixedTotal();
+  var needs = catSum('needs');
+  var wants = catSum('wants');
+  var essentialPool = income - fixed;
+
+  if(essentialPool < 0){
+    STATE.debts.forEach(function(d){ d.payment = 0; d.paid=false; });
+    STATE.savingsGoals.forEach(function(g){ g.contribution = 0; g.paid=false; });
+    STATE.cushionGoal.contribution = 0; STATE.cushionGoal.paid=false;
+    STATE.autoAlloc = {status:'deficit-fixed', shortBy:-essentialPool, fixed:fixed, income:income, at:new Date().toISOString()};
+    return;
+  }
+
+  var pool = essentialPool - needs - wants;
+
+  if(pool < 0){
+    STATE.debts.forEach(function(d){ d.payment = 0; d.paid=false; });
+    STATE.savingsGoals.forEach(function(g){ g.contribution = 0; g.paid=false; });
+    STATE.cushionGoal.contribution = 0; STATE.cushionGoal.paid=false;
+    STATE.autoAlloc = {status:'deficit-needs', shortBy:-pool, fixed:fixed, needs:needs, wants:wants, income:income, at:new Date().toISOString()};
+    return;
+  }
+
+  var goalAlloc = [];
+  STATE.savingsGoals.forEach(function(g){ g.contribution = 0; g.paid = false; g.autoNeed = 0; });
+
+  // Goals with a date come first: each gets what it needs per month to be
+  // full by that date, nearest date first. Cards keep at least 30% of the
+  // pool unless a date is close (<= 3 months) — then that goal is urgent.
+  var dated = STATE.savingsGoals.filter(function(g){ return goalMonthlyNeed(g); })
+    .sort(function(a,b){ return parseISODate(a.deadline)-parseISODate(b.deadline); });
+  var datedCap = pool*0.7, datedUsed = 0;
+  dated.forEach(function(g){
+    var info = goalMonthlyNeed(g);
+    var avail = info.urgent ? pool : Math.min(pool, Math.max(0, datedCap-datedUsed));
+    var contrib = Math.min(avail, info.need);
+    g.contribution = Math.round(contrib);
+    g.autoNeed = Math.ceil(info.need);
+    pool -= contrib;
+    if(!info.urgent) datedUsed += contrib;
+    goalAlloc.push({name:g.name, amount:g.contribution});
+  });
+
+  var debtAlloc = [];
+  STATE.debts.forEach(function(d){
+    var need = debtAmount(d);
+    var pay = Math.min(pool, need);
+    d.payment = Math.round(pay);
+    d.paid = false;
+    pool -= pay;
+    debtAlloc.push({name:d.name, amount:d.payment});
+  });
+
+  STATE.savingsGoals.forEach(function(g){
+    if(goalMonthlyNeed(g)) return;
+    var need = Math.max(0, (g.target||0) - (g.current||0));
+    var contrib = Math.min(pool, need);
+    g.contribution = Math.round(contrib);
+    pool -= contrib;
+    goalAlloc.push({name:g.name, amount:g.contribution});
+  });
+
+  var cushionBasis = (STATE.cushionGoal.targetMonths||0) * (fixed+needs);
+  var cushionNeed = Math.max(0, cushionBasis - (STATE.cushionGoal.current||0));
+  var cushionContrib = Math.min(pool, cushionNeed);
+  STATE.cushionGoal.contribution = Math.round(cushionContrib);
+  STATE.cushionGoal.paid = false;
+  pool -= cushionContrib;
+
+  STATE.autoAlloc = {
+    status:'ok', income:income, fixed:fixed, needs:needs, wants:wants,
+    debts:debtAlloc, goals:goalAlloc, cushion:STATE.cushionGoal.contribution,
+    leftover: Math.round(Math.max(0,pool)),
+    at:new Date().toISOString()
+  };
+}
+
+// ---------------- Monthly archive ----------------
+var RU_MONTHS = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+function nextMonthName(cur){
+  var parts = String(cur||'').trim().split(/\s+/);
+  var idx = RU_MONTHS.indexOf(parts[0]);
+  var year = parseInt(parts[1], 10);
+  if(idx===-1 || isNaN(year)){
+    var now = new Date();
+    return RU_MONTHS[now.getMonth()]+' '+now.getFullYear();
+  }
+  idx++;
+  if(idx>11){ idx=0; year++; }
+  return RU_MONTHS[idx]+' '+year;
+}
+
+function startNewMonth(){
+  var income = totalIncome();
+  var planned = needsGroupTotal()+wantsGroupTotal()+goalsGroupTotal();
+  var actual = txTotal()+fixedActualTotal();
+  STATE.history.push({
+    month: STATE.month,
+    archivedAt: new Date().toISOString(),
+    income: income,
+    planned: planned,
+    actual: actual,
+    leftover: income-planned,
+    fixedTotal: fixedTotal(),
+    needsTotal: needsGroupTotal(),
+    wantsTotal: wantsGroupTotal(),
+    goalsTotal: goalsGroupTotal(),
+    debtsPaid: debtsPaymentTotal(),
+    goalsContrib: goalsContribTotal(),
+    cushionContrib: STATE.cushionGoal.contribution||0,
+    categories: STATE.categories.map(function(c){
+      return {id:c.id, name:c.name, planned:c.amount||0, actual:txSumCat(c.id)};
+    }),
+    fixedItems: STATE.fixedExpenses.items.filter(function(it){return it.paid;}).map(function(it){ return {name:it.name, amount:it.amount||0}; })
+      .concat(subscriptionsPaidTotal()>0 ? [{name:'Подписки', amount:subscriptionsPaidTotal()}] : [])
+      .concat(carPersonalAmount()>0 ? [{name:'Личное на авто', amount:carPersonalAmount()}] : [])
+  });
+
+  // Carry debt/goal/cushion balances forward — only for payments you actually
+  // confirmed with the checkbox. An unconfirmed one is assumed NOT to have
+  // happened, so the balance simply stays put instead of silently dropping.
+  STATE.debts.forEach(function(d){
+    if(d.paid) d.available = Math.min(d.limit||0, (d.available||0)+(d.payment||0));
+    d.payment = 0; d.paid = false;
+  });
+  STATE.savingsGoals.forEach(function(g){
+    if(g.paid) g.current = (g.current||0)+(g.contribution||0);
+    g.contribution = 0; g.paid = false;
+  });
+  if(STATE.cushionGoal.paid) STATE.cushionGoal.current = (STATE.cushionGoal.current||0)+(STATE.cushionGoal.contribution||0);
+  STATE.cushionGoal.contribution = 0;
+  STATE.cushionGoal.paid = false;
+
+  STATE.month = nextMonthName(STATE.month);
+  STATE.incomes = [{id:uid('inc'), label:'Доход 1', amount:0}];
+  STATE.transactions = [];
+  STATE.checklist.forEach(function(c){ c.done=false; });
+  STATE.tips.forEach(function(t){ t.done=false; });
+  STATE.fixedExpenses.items.forEach(function(it){ it.paid=false; });
+  STATE.fixedExpenses.subscriptions.forEach(function(it){ it.paid=false; });
+  STATE.autoAlloc = null;
+}
+
+function relTime(iso){
+  if(!iso) return '';
+  var d = new Date(iso), now = new Date();
+  var diffMs = now - d, min = Math.floor(diffMs/60000);
+  if(min < 1) return 'только что';
+  if(min < 60) return min+' мин назад';
+  var hrs = Math.floor(min/60);
+  if(hrs < 24) return hrs+' ч назад';
+  var days = Math.floor(hrs/24);
+  if(days < 7) return days+' дн назад';
+  return d.toLocaleDateString('ru-RU', {day:'2-digit', month:'2-digit'});
+}
+
+// ---------------- Nav ----------------
+var NAV = [
+  {group:'ОБЗОР', items:[
+    {id:'dashboard', label:'Дашборд', icon:'grid'}
+  ]},
+  {group:'БЮДЖЕТ', items:[
+    {id:'incomes', label:'Доходы', icon:'income'},
+    {id:'categories', label:'Категории', icon:'tag'},
+    {id:'transactions', label:'Траты', icon:'list'}
+  ]},
+  {group:'ОБЯЗАТЕЛЬСТВА', items:[
+    {id:'fixed', label:'Обязательные расходы', icon:'lock'},
+    {id:'loans', label:'Кредиты', icon:'lock'},
+    {id:'debts', label:'Кредитные карты', icon:'card'}
+  ]},
+  {group:'ЦЕЛИ', items:[
+    {id:'goals', label:'Цели', icon:'flag'},
+    {id:'cushion', label:'Подушка', icon:'shield'}
+  ]},
+  {group:'АНАЛИТИКА', items:[
+    {id:'analytics-months', label:'По месяцам', icon:'chart'},
+    {id:'analytics-food', label:'Еда', icon:'chart'},
+    {id:'analytics-pets', label:'Питомцы', icon:'chart'},
+    {id:'analytics-score', label:'Фин. грамотность', icon:'shield'}
+  ]},
+  {group:'ПРОЧЕЕ', items:[
+    {id:'tips', label:'Экономия', icon:'trend'},
+    {id:'checklist', label:'Чек-лист', icon:'check'}
+  ]}
+];
+var PAGE_META = {
+  dashboard:{title:'Дашборд', sub:'Сводка по бюджету за месяц'},
+  incomes:{title:'Доходы', sub:'Каждое поступление отдельной строкой'},
+  categories:{title:'Категории', sub:'Повседневные расходы: план на месяц и факт из «Трат»'},
+  'analytics-months':{title:'Аналитика по месяцам', sub:'Доход и расходы за прошлые месяцы'},
+  'analytics-food':{title:'Аналитика: еда', sub:'Сколько % дохода уходит на продукты — по ценам Пятёрочки и SPAR в Калининграде'},
+  'analytics-pets':{title:'Аналитика: питомцы', sub:'Корм для собаки и дегу — по реальным ценам'},
+  'analytics-score':{title:'Финансовая грамотность', sub:'Оценка по вашим реальным цифрам, не общие советы'},
+  transactions:{title:'Траты', sub:'Журнал расходов — вручную или по данным, которые вы прислали в чат Claude'},
+  fixed:{title:'Обязательные расходы', sub:'Фиксированные ежемесячные платежи — заходите редко, но можно править в любой момент'},
+  loans:{title:'Кредиты', sub:'Ипотека и потребительские кредиты: платёж, основной долг, проценты, остаток'},
+  debts:{title:'Кредитные карты', sub:'Долги, которые закрываем'},
+  goals:{title:'Цели', sub:'Крупные покупки, на которые откладываем'},
+  cushion:{title:'Финансовая подушка', sub:'Резерв на непредвиденные расходы'},
+  tips:{title:'На чём сэкономить', sub:'Идеи под текущий бюджет'},
+  checklist:{title:'Чек-лист', sub:'Проверка в конце месяца'}
+};
+
+// ---------------- Render: shell ----------------
+function renderShell(){
+  var s = document.getElementById('shell');
+  s.innerHTML =
+    '<aside class="sidebar">'+
+      '<div class="brand"><div class="logo">ЯБ</div><div><div class="name">Янтарный бюджет</div><div class="tag">Калининград · 2 взрослых</div></div></div>'+
+      '<nav class="nav">'+NAV.map(renderNavGroup).join('')+'</nav>'+
+      '<div class="sidebar-footer">'+
+        '<input type="text" class="month-input" data-role="month-label" value="'+esc(STATE.month)+'">'+
+        '<div class="sub" id="saved-sub">—</div>'+
+        '<button class="linkbtn" data-role="new-month">Начать новый месяц →</button>'+
+        '<div class="row">'+
+          '<button class="linkbtn" data-role="export">Экспорт JSON</button>'+
+          '<button class="linkbtn" data-role="import">Импорт JSON</button>'+
+          '<button class="linkbtn danger" data-role="reset-all">Сбросить всё</button>'+
+        '</div>'+
+        '<input type="file" id="import-input" accept="application/json" style="display:none;">'+
+      '</div>'+
+    '</aside>'+
+    '<main class="main">'+
+      '<header class="topbar">'+
+        '<div><h1 id="page-title"></h1><p class="sub" id="page-sub"></p></div>'+
+        '<div class="top-actions">'+
+          '<span class="clock" id="clock"></span>'+
+          '<span class="pill saved"><span class="dot"></span><span id="save-text">Сохранено</span></span>'+
+          '<button class="icon-toggle" id="theme-toggle" title="Тема">'+icon('moon')+'</button>'+
+        '</div>'+
+      '</header>'+
+      '<div class="content" id="content"></div>'+
+    '</main>';
+
+  s.querySelectorAll('[data-role=nav-item]').forEach(function(btn){
+    btn.addEventListener('click', function(){ currentPage = btn.dataset.page; renderShell(); });
+  });
+  document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+  document.getElementById('import-input').addEventListener('change', handleImportFile);
+  s.querySelector('[data-role=export]').addEventListener('click', exportJson);
+  s.querySelector('[data-role=import]').addEventListener('click', function(){ document.getElementById('import-input').click(); });
+  s.querySelector('[data-role=reset-all]').addEventListener('click', function(){
+    if(confirm('Стереть все данные бюджета на этой странице? Отменить нельзя.')){ STATE = defaultState(); afterChange(); }
+  });
+  s.querySelector('[data-role=new-month]').addEventListener('click', function(){
+    if(confirm('Заархивировать «'+STATE.month+'» и перейти к следующему месяцу?\n\nДоходы и журнал трат обнулятся. Остатки по картам, целям и подушке перенесутся с учётом того, что вы уже внесли в этом месяце.')){
+      startNewMonth();
+      currentPage = 'analytics-months';
+      afterChange();
+    }
+  });
+
+  document.getElementById('page-title').textContent = PAGE_META[currentPage].title;
+  document.getElementById('page-sub').textContent = PAGE_META[currentPage].sub;
+  updateClock();
+  updateSavedText();
+  renderPage();
+}
+
+function renderNavGroup(g){
+  return '<div><div class="nav-group-label">'+esc(g.group)+'</div><div class="nav-items">'+
+    g.items.map(function(it){
+      return '<button class="nav-item'+(it.id===currentPage?' active':'')+'" data-role="nav-item" data-page="'+it.id+'">'+icon(it.icon)+'<span>'+esc(it.label)+'</span></button>';
+    }).join('')+
+    '</div></div>';
+}
+
+function updateClock(){
+  var el = document.getElementById('clock');
+  if(!el) return;
+  var now = new Date();
+  var d = String(now.getDate()).padStart(2,'0')+'.'+String(now.getMonth()+1).padStart(2,'0');
+  var t = now.toLocaleTimeString('ru-RU');
+  el.textContent = d+' '+t;
+}
+setInterval(updateClock, 1000);
+
+function updateSavedText(){
+  var el = document.getElementById('saved-sub');
+  if(el) el.textContent = lastSavedAt ? ('Сохранено '+lastSavedAt.toLocaleTimeString('ru-RU')) : 'Ещё не сохранялось';
+}
+
+// ---------------- Theme ----------------
+function applyTheme(){
+  var saved = null;
+  try{ saved = localStorage.getItem(THEME_KEY); }catch(e){}
+  if(saved==='light' || saved==='dark') document.documentElement.setAttribute('data-theme', saved);
+  var btn = document.getElementById('theme-toggle');
+  if(btn){
+    var isDark = saved==='dark' || (saved!=='light' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    btn.innerHTML = isDark ? icon('sun') : icon('moon');
+  }
+}
+function toggleTheme(){
+  var current = document.documentElement.getAttribute('data-theme');
+  var isDark = current==='dark' || (!current && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  var next = isDark ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  try{ localStorage.setItem(THEME_KEY, next); }catch(e){}
+  applyTheme();
+}
+
+// ---------------- Render: pages ----------------
+function renderPage(){
+  var el = document.getElementById('content');
+  if(!el) return;
+  var fn = {
+    dashboard: pageDashboard, incomes: pageIncomes, categories: pageCategories,
+    transactions: pageTransactions, fixed: pageFixed, debts: pageDebts, loans: pageLoans,
+    goals: pageGoals, cushion: pageCushion, tips: pageTips, checklist: pageChecklist,
+    'analytics-food': pageAnalyticsFood, 'analytics-pets': pageAnalyticsPets, 'analytics-months': pageAnalyticsMonths,
+    'analytics-score': pageAnalyticsScore
+  }[currentPage] || pageDashboard;
+  el.innerHTML = fn();
+}
+
+function statCard(color, iconName, label, value, trend){
+  return '<div class="stat-card"><div class="head"><span class="label">'+esc(label)+'</span><span class="chip c-'+color+'">'+icon(iconName)+'</span></div>'+
+    '<div class="value">'+value+'</div>'+
+    (trend ? '<span class="trend '+trend.cls+'">'+(trend.cls==='bad'?'▲':'▼')+' '+esc(trend.text)+'</span>' : '')+
+    '</div>';
+}
+function barSeg(pct,color){ return '<span style="width:'+Math.max(0,Math.min(100,pct)).toFixed(1)+'%;background:'+color+'"></span>'; }
+
+function pageDashboard(){
+  var income = totalIncome();
+  var needsSum = needsGroupTotal(), wantsSum = wantsGroupTotal(), goalsSum = goalsGroupTotal();
+  var planned = needsSum+wantsSum+goalsSum;
+  var leftover = income - planned;
+  var actualTotal = txTotal() + fixedActualTotal();
+  var realLeftover = income - actualTotal;
+  var needsPct = income>0? needsSum/income*100:0;
+  var wantsPct = income>0? wantsSum/income*100:0;
+  var goalsPct = income>0? goalsSum/income*100:0;
+
+  var html = '';
+
+  html += '<div class="stat-grid">'+
+    statCard('blue','income','Доход за месяц', fmt(income)) +
+    statCard('purple','tag','План по бюджету', fmt(planned)) +
+    statCard('amber','list','Факт расходов', fmt(actualTotal), actualTotal>planned?{cls:'bad',text:'выше плана на '+fmt(actualTotal-planned)}:null) +
+    statCard(leftover<0?'danger':'good','grid', leftover<0?'Перерасход плана':'Свободно по плану', fmt(Math.abs(leftover))) +
+    statCard(realLeftover<0?'danger':'good','grid', realLeftover<0?'Реальный перерасход':'Реально свободно', fmt(Math.abs(realLeftover)), realLeftover<0?{cls:'bad',text:'тратите больше дохода'}:null) +
+    '</div>';
+
+  html += renderMoneyBlocks();
+
+  html += '<div class="two-col">';
+  html += '<div class="card"><h2>Распределение дохода</h2><div class="sub">Обязательные (вкл. фикс. платежи) / желания / цели.</div>'+
+    '<div class="split-bar">'+barSeg(needsPct,'var(--good)')+barSeg(wantsPct,'var(--warn)')+barSeg(goalsPct,'var(--amber)')+'</div>'+
+    '<div class="split-legend">'+
+      '<span><span class="dot" style="background:var(--good)"></span>Обязательные — '+fmt(needsSum)+'</span>'+
+      '<span><span class="dot" style="background:var(--warn)"></span>Желания — '+fmt(wantsSum)+'</span>'+
+      '<span><span class="dot" style="background:var(--amber)"></span>Цели/долги — '+fmt(goalsSum)+'</span>'+
+    '</div>'+
+    '<div class="hint">Из них фиксированные платежи (ипотека, кредиты, гараж, подписки, авто) — '+fmt(fixedTotal())+'/мес, см. «Обязательные расходы».</div>'+
+    '</div>';
+
+  var recent = STATE.transactions.slice().sort(function(a,b){ return new Date(b.addedAt) - new Date(a.addedAt); }).slice(0,6);
+  html += '<div class="card"><h2>Последние траты</h2><div class="sub">6 последних записей из журнала.</div><div class="activity">';
+  if(recent.length===0){
+    html += '<div class="empty">Пока пусто — добавьте на странице «Траты», или пришлите скриншот банка в чат Claude, и он занесёт данные сюда.</div>';
+  } else {
+    recent.forEach(function(t){
+      var cat = STATE.categories.filter(function(c){return c.id===t.category;})[0];
+      var color = cat && cat.group==='wants' ? 'var(--warn)' : 'var(--good)';
+      html += '<div class="activity-row"><span class="dot" style="background:'+color+'"></span>'+
+        '<div class="desc"><strong>'+esc(t.description)+'</strong><span>'+esc(cat?cat.name:'—')+'</span></div>'+
+        '<div class="amt">'+fmt(t.amount)+'</div>'+
+        '<div class="when">'+relTime(t.addedAt)+'</div></div>';
+    });
+  }
+  html += '</div></div></div>';
+
+  html += '<div class="chatnote">'+icon('chat')+'<span>Хотите занести траты или подписки со скриншота банка? Пришлите фото прямо в чат Claude — он распознает операции и сам обновит нужный журнал на странице.</span></div>';
+
+  return html;
+}
+
+function rowLine(name, amount){
+  return '<div class="activity-row"><div class="desc"><strong>'+esc(name)+'</strong></div><div class="amt">'+fmt(amount)+'</div></div>';
+}
+function rowLineTag(name, tag, amount){
+  return '<div class="activity-row"><div class="desc"><strong>'+esc(name)+'</strong><span>'+esc(tag)+'</span></div><div class="amt">'+fmt(amount)+'</div></div>';
+}
+
+function rowCheckable(name, amount, paid, role, id){
+  return '<div class="activity-row">'+
+    '<input type="checkbox" class="paid-check" data-role="'+role+'" data-id="'+id+'" title="Оплачено" style="flex-shrink:0;"'+(paid?' checked':'')+'>'+
+    '<div class="desc"><strong>'+esc(name)+'</strong><span>'+(paid?'оплачено':'ждёт оплаты')+'</span></div>'+
+    '<div class="amt">'+fmt(amount)+'</div></div>';
+}
+
+function blockFixed(){
+  var carAmt = carPersonalAmount();
+  var paidCount = STATE.fixedExpenses.items.filter(function(it){return it.paid;}).length
+    + STATE.fixedExpenses.subscriptions.filter(function(it){return it.paid;}).length;
+  var totalCount = STATE.fixedExpenses.items.length + STATE.fixedExpenses.subscriptions.length;
+  var html = '<div class="card"><h2>Обязательные расходы</h2><div class="sub">Подтверждено '+paidCount+' из '+totalCount+' — отметьте галочкой, когда оплатите, тогда попадёт в «Факт».</div><div class="rows">';
+  STATE.fixedExpenses.items.forEach(function(it){ html += rowCheckable(it.name, it.amount, it.paid, 'fixed-paid', it.id); });
+  STATE.fixedExpenses.subscriptions.forEach(function(sub){ html += rowCheckable(sub.name, sub.amount, sub.paid, 'sub-paid', sub.id); });
+  if(carAmt>0){
+    html += rowLine('Личное на авто ('+STATE.fixedExpenses.carPercent+'%)', carAmt);
+  }
+  html += '</div><div class="total-line"><span>Итого</span><span class="v">'+fmt(fixedTotal())+'</span></div></div>';
+  return html;
+}
+
+function blockGoalsDebts(){
+  var rows = [];
+  STATE.debts.forEach(function(d){ if((d.payment||0)>0) rows.push({name:d.name, amount:d.payment, paid:d.paid, role:'debt-paid', id:d.id}); });
+  STATE.savingsGoals.forEach(function(g){ if((g.contribution||0)>0) rows.push({name:g.name, amount:g.contribution, paid:g.paid, role:'goal-paid', id:g.id}); });
+  if((STATE.cushionGoal.contribution||0)>0) rows.push({name:'Подушка безопасности', amount:STATE.cushionGoal.contribution, paid:STATE.cushionGoal.paid, role:'cushion-paid', id:'cushion'});
+
+  var html = '<div class="card"><h2>Цели и кредитные карты</h2>';
+  if(rows.length===0){
+    html += '<div class="sub">Только то, на что реально пойдут деньги в этом месяце.</div>'+
+      '<div class="empty">Пока ничего не запланировано. Впишите доход на странице «Доходы» (заполнится само) или суммы вручную на страницах «Кредитные карты» / «Цели» / «Подушка».</div></div>';
+    return html;
+  }
+  var total = rows.reduce(function(s,r){return s+r.amount;},0);
+  var paidCount = rows.filter(function(r){return r.paid;}).length;
+  html += '<div class="sub">Подтверждено '+paidCount+' из '+rows.length+' — отметьте, когда перевод реально ушёл.</div><div class="rows">';
+  rows.forEach(function(r){ html += rowCheckable(r.name, r.amount, r.paid, r.role, r.id); });
+  html += '</div><div class="total-line"><span>Итого</span><span class="v">'+fmt(total)+'</span></div></div>';
+  return html;
+}
+
+function rowPlanActual(name, plan, actual){
+  var over = actual - plan;
+  return '<div class="activity-row"><div class="desc"><strong>'+esc(name)+'</strong><span>план '+fmt(plan)+'</span></div>'+
+    '<div class="amt">'+fmt(actual)+(over>0? ' <span style="color:var(--danger);font-size:11px;font-weight:700;">(+'+fmt(over)+')</span>' : '')+'</div></div>';
+}
+
+function categoryBlock(title, sub, ids){
+  var planTotal = 0, actualTotal = 0;
+  var html = '<div class="card"><h2>'+esc(title)+'</h2><div class="sub">'+esc(sub)+'</div>'+
+    '<div class="col-labels" style="grid-template-columns:1fr 110px;"><span></span><span style="text-align:right;">Факт (план)</span></div>'+
+    '<div class="rows">';
+  ids.forEach(function(id){
+    var c = STATE.categories.filter(function(x){return x.id===id;})[0];
+    if(!c) return;
+    var fact = txSumCat(id);
+    planTotal += c.amount||0;
+    actualTotal += fact;
+    html += rowPlanActual(c.name, c.amount||0, fact);
+  });
+  var over = actualTotal - planTotal;
+  html += '</div><div class="total-line"><span>Факт'+(over>0?' — перерасход '+fmt(over):'')+'</span><span class="v">'+fmt(actualTotal)+' <span class="hint" style="font-weight:400;">/ план '+fmt(planTotal)+'</span></span></div></div>';
+  return html;
+}
+
+function renderMoneyBlocks(){
+  var a = STATE.autoAlloc;
+  var html = '<div class="group-head"><h2 style="font-size:16px;">Куда идут деньги в этом месяце</h2>'+
+    '<button class="btn ghost" data-role="redistribute" style="align-self:auto;">Распределить сейчас</button></div>';
+
+  if(a && a.status==='deficit-fixed'){
+    html += '<div class="banner"><span>Дохода '+fmt(a.income)+' не хватает даже на обязательные платежи ('+fmt(a.fixed)+') — не хватает '+fmt(a.shortBy)+'. Кредитные карты, цели и подушка обнулены.</span></div>';
+  } else if(a && a.status==='deficit-needs'){
+    html += '<div class="banner"><span>После обязательных платежей ('+fmt(a.fixed)+') остаётся '+fmt(a.income-a.fixed)+', а на еду/транспорт/питомцев/развлечения заложено '+fmt(a.needs+a.wants)+' — не хватает '+fmt(a.shortBy)+'. Кредитные карты, цели и подушка обнулены.</span></div>';
+  }
+
+  html += '<div class="grid-2x2">';
+  html += blockFixed();
+  html += blockGoalsDebts();
+  html += categoryBlock('Ежемесячные', 'Еда, питомцы, связь — предсказуемые траты раз в месяц.', STATE.categories.filter(function(c){return c.freq==='monthly';}).map(function(c){return c.id;}));
+  html += categoryBlock('Ежедневные', 'Транспорт, развлечения и другое — копится день за днём.', STATE.categories.filter(function(c){return c.freq==='daily';}).map(function(c){return c.id;}));
+  html += '</div>';
+  return html;
+}
+
+function pageIncomes(){
+  var html = '<div class="card"><h2>Поступления</h2><div class="sub">Вносите каждое поступление отдельной строкой — сумма пересчитывается сама.</div><div class="rows">';
+  STATE.incomes.forEach(function(inc){
+    html += '<div class="income-row">'+
+      '<input type="text" data-role="income-label" data-id="'+inc.id+'" value="'+esc(inc.label)+'">'+
+      '<input type="number" min="0" step="500" data-role="income-amount" data-id="'+inc.id+'" value="'+(inc.amount||0)+'">'+
+      '<button class="iconbtn" data-role="remove-income" data-id="'+inc.id+'" title="Удалить">✕</button>'+
+      '</div>';
+  });
+  html += '</div><button class="btn ghost" data-role="add-income">+ Добавить поступление</button>'+
+    '<div class="hint">Итого: '+fmt(totalIncome())+'</div></div>';
+  return html;
+}
+
+function splitField(key,label){
+  return '<label>'+label+' (%)<input type="number" min="0" max="100" step="5" data-role="split" data-key="'+key+'" value="'+STATE.splitTargets[key]+'"></label>';
+}
+
+function pageCategories(){
+  var income = totalIncome();
+  var targetSum = STATE.splitTargets.needs+STATE.splitTargets.wants+STATE.splitTargets.goals;
+  var targetBadgeOk = targetSum===100;
+
+  var html = '<div class="card"><h2>Распределение дохода</h2>'+
+    '<div class="sub">Классика — 50/30/20. При активном закрытии кредитных карт обычно выгоднее сдвинуть в сторону целей.</div>'+
+    '<div class="split-targets">'+splitField('needs','Обязательные','needs')+splitField('wants','Желания','wants')+splitField('goals','Цели / долг','goals')+'</div>'+
+    '<span class="badge '+(targetBadgeOk?'ok':'off')+'">'+(targetBadgeOk?'Сумма целей = 100%':'Сумма целей = '+targetSum+'% — поправьте, чтобы было 100%')+'</span>'+
+    '</div>';
+
+  html += '<div class="banner info"><span>Фиксированные обязательные платежи (ипотека, кредиты, аренда гаража, подписки, авто) считаются отдельно на странице «Обязательные расходы» — сейчас это '+fmt(fixedTotal())+'/мес.</span></div>';
+
+  html += '<div class="card"><h2>Ежемесячные</h2>'+
+    '<div class="sub">Предсказуемые траты раз в месяц: еда, питомцы, связь. План резервируется сразу после обязательных платежей — раньше карт, целей и подушки. Факт считается из журнала «Траты».</div>'+
+    '<div class="col-labels"><span></span><span>План</span><span>Факт</span><span>%</span></div>'+
+    freqGroup('monthly', 'monthly', 'Ежемесячные', income) +
+    '</div>';
+
+  html += '<div class="card"><h2>Ежедневные</h2>'+
+    '<div class="sub">Траты, которые накапливаются день за днём: транспорт, развлечения и т.п. Тоже резервируются раньше карт, целей и подушки.</div>'+
+    '<div class="col-labels"><span></span><span>План</span><span>Факт</span><span>%</span></div>'+
+    freqGroup('daily', 'daily', 'Ежедневные', income) +
+    '</div>';
+  return html;
+}
+
+function freqGroup(freq, tagClass, label, income){
+  var cats = STATE.categories.filter(function(c){return c.freq===freq;});
+  var sum = cats.reduce(function(s,c){return s+(c.amount||0);},0);
+  var out = '<div class="group-head"><span class="tag '+tagClass+'">'+label+'</span><span class="amt">'+fmt(sum)+' · '+pctFmt(income>0?sum/income*100:0)+'</span></div>';
+  out += '<div class="rows">';
+  cats.forEach(function(c){
+    var pct = income>0? c.amount/income*100 : 0;
+    var fact = txSumCat(c.id);
+    var delta = (c.amount||0) - fact;
+    var deltaTxt = delta<0 ? 'перерасход '+fmt(-delta) : 'осталось '+fmt(delta);
+    out += '<div class="cat-row">'+
+      '<span class="cat-name">'+esc(c.name)+'<span class="delta '+(delta<0?'over':'under')+'">'+deltaTxt+'</span></span>'+
+      '<input type="number" min="0" step="500" data-role="cat-amount" data-id="'+c.id+'" value="'+(c.amount||0)+'">'+
+      '<span class="fact">'+fmt(fact)+'</span>'+
+      '<span class="pct">'+pctFmt(pct)+'</span></div>';
+  });
+  out += '</div>';
+  return out;
+}
+
+function categoryOptions(selected){
+  var out = '';
+  STATE.categories.forEach(function(c){
+    out += '<option value="'+c.id+'"'+(selected===c.id?' selected':'')+'>'+esc(c.name)+'</option>';
+  });
+  return out;
+}
+
+function pageTransactions(){
+  var html = '<div class="chatnote">'+icon('chat')+'<span>Проще всего: присылайте скриншот истории операций из банка прямо в чат Claude — он распознает суммы и добавит записи в этот журнал сам. Форма ниже — для ручного ввода.</span></div>';
+
+  html += '<div class="card"><h2>Добавить трату</h2><div class="add-tx-row">'+
+    '<input type="text" id="tx-desc" placeholder="Описание, напр. «Перекрёсток»">'+
+    '<input type="number" id="tx-amount" placeholder="Сумма" min="0" step="1">'+
+    '<select id="tx-category">'+categoryOptions('food')+'</select>'+
+    '<button class="btn primary" data-role="add-tx">'+icon('plus')+' Добавить</button>'+
+    '</div></div>';
+
+  var list = STATE.transactions.slice().sort(function(a,b){ return new Date(b.addedAt) - new Date(a.addedAt); });
+  html += '<div class="card"><h2>Журнал трат</h2><div class="sub">Итого: '+fmt(txTotal())+' · '+list.length+' записей</div><div class="rows">';
+  if(list.length===0){
+    html += '<div class="empty">Записей пока нет.</div>';
+  } else {
+    list.forEach(function(t){
+      html += '<div class="tx-row">'+
+        '<input type="text" data-role="tx-desc-edit" data-id="'+t.id+'" value="'+esc(t.description)+'">'+
+        '<input type="number" min="0" step="1" data-role="tx-amount-edit" data-id="'+t.id+'" value="'+(t.amount||0)+'">'+
+        '<select data-role="tx-cat-edit" data-id="'+t.id+'">'+categoryOptions(t.category)+'</select>'+
+        '<span class="hint" style="text-align:right;">'+relTime(t.addedAt)+'</span>'+
+        '<button class="iconbtn" data-role="remove-tx" data-id="'+t.id+'" title="Удалить">✕</button>'+
+        '</div>';
+    });
+  }
+  html += '</div></div>';
+  return html;
+}
+
+function field(label, role, value, step, dataId){
+  return '<div class="field"><label class="flabel">'+label+'</label>'+
+    '<input type="number" min="0" step="'+(step||500)+'" data-role="'+role+'"'+(dataId?' data-id="'+dataId+'"':'')+' value="'+(value||0)+'"></div>';
+}
+
+// ---- Обязательные расходы ----
+function pageFixed(){
+  var itemsTotal = fixedItemsTotal(), subsTotal = subscriptionsTotal(), carAmt = carPersonalAmount();
+  var grandTotal = itemsTotal + subsTotal + carAmt;
+  var itemsPaid = fixedItemsPaidTotal(), subsPaid = subscriptionsPaidTotal();
+
+  var html = '<div class="chatnote">'+icon('chat')+'<span>Суммы здесь всегда резервируются в бюджете заранее. Но в «Факт расходов» (дашборд, аналитика, оценка грамотности) платёж попадает только после того, как вы отметите его галочкой «Оплачено».</span></div>';
+
+  html += '<div class="card"><h2>Постоянные платежи</h2><div class="sub">Кредиты, аренда и прочие суммы, которые почти не меняются месяц к месяцу.</div><div class="rows">';
+  STATE.fixedExpenses.items.forEach(function(it){
+    html += '<div class="fixed-item'+(it.paid?' is-paid':'')+'">'+
+      '<div class="row1">'+
+        '<input type="checkbox" class="paid-check" data-role="fixed-paid" data-id="'+it.id+'" title="Оплачено"'+(it.paid?' checked':'')+'>'+
+        '<input type="text" data-role="fixed-name" data-id="'+it.id+'" value="'+esc(it.name)+'">'+
+        '<input type="number" min="0" step="500" data-role="fixed-amount" data-id="'+it.id+'" value="'+(it.amount||0)+'">'+
+        '<button class="iconbtn" data-role="remove-fixed" data-id="'+it.id+'" title="Удалить">✕</button>'+
+      '</div>'+
+      '<div class="note-row"><input type="text" class="note" placeholder="Заметка (необязательно)" data-role="fixed-note" data-id="'+it.id+'" value="'+esc(it.note||'')+'">'+
+        '<span class="paid-label '+(it.paid?'yes':'no')+'" style="align-self:center;">'+(it.paid?'Оплачено':'Ещё не оплачено')+'</span></div>'+
+      '</div>';
+  });
+  html += '</div><button class="btn ghost" data-role="add-fixed">+ Добавить платёж</button>'+
+    '<div class="total-line"><span>Оплачено '+fmt(itemsPaid)+' из</span><span class="v">'+fmt(itemsTotal)+'</span></div></div>';
+
+  html += '<div class="card"><h2>Подписки</h2>'+
+    '<div class="chatnote">'+icon('chat')+'<span>Присылайте скриншоты списаний по подпискам в чат Claude — он распознает их и добавит сюда сам.</span></div>'+
+    '<div class="rows">';
+  if(STATE.fixedExpenses.subscriptions.length===0){
+    html += '<div class="empty">Подписок пока нет.</div>';
+  } else {
+    STATE.fixedExpenses.subscriptions.forEach(function(sub){
+      html += '<div class="sub-row">'+
+        '<input type="checkbox" class="paid-check" data-role="sub-paid" data-id="'+sub.id+'" title="Оплачено"'+(sub.paid?' checked':'')+'>'+
+        '<input type="text" data-role="sub-name" data-id="'+sub.id+'" value="'+esc(sub.name)+'">'+
+        '<input type="number" min="0" step="10" data-role="sub-amount" data-id="'+sub.id+'" value="'+(sub.amount||0)+'">'+
+        '<button class="iconbtn" data-role="remove-sub" data-id="'+sub.id+'" title="Удалить">✕</button>'+
+        '</div>';
+    });
+  }
+  html += '</div><div class="inline-add">'+
+    '<input type="text" id="new-sub-name" placeholder="Название, напр. «Яндекс Плюс»">'+
+    '<input type="number" id="new-sub-amount" placeholder="Сумма" min="0" step="10">'+
+    '<button class="btn" data-role="add-sub">'+icon('plus')+' Добавить</button>'+
+    '</div>'+
+    '<div class="total-line"><span>Оплачено '+fmt(subsPaid)+' из</span><span class="v">'+fmt(subsTotal)+'</span></div></div>';
+
+  html += '<div class="card"><h2>Личные расходы на авто</h2><div class="sub">Автоматически откладывается процент от дохода.</div>'+
+    '<div class="field-row">'+
+      field('Процент от дохода','car-percent', STATE.fixedExpenses.carPercent, 1) +
+      '<div class="field"><div class="flabel">Сумма в этом месяце</div><div class="hint" style="padding-top:8px;font-size:14px;font-weight:700;color:var(--ink)">'+fmt(carAmt)+'</div></div>'+
+    '</div></div>';
+
+  html += '<div class="card"><div class="total-line" style="border-top:none;font-size:16px;"><span>Итого обязательных расходов в месяц</span><span class="v">'+fmt(grandTotal)+'</span></div></div>';
+
+  return html;
+}
+
+// ---- Кредиты (аннуитет, проценты по дням) ----
+// Rate is annual; interest accrues DAILY on the outstanding balance
+// (balance × rate × days / 365 or 366) and is paid with each monthly payment.
+// Payments fall on the same day of the month, first one a month after the
+// start date. The payment is the standard annuity for the term; the last one
+// absorbs any difference. Early repayments take effect on their exact date,
+// cut the payment (not the term) and the payment is recalculated.
+function parseISODate(s){
+  if(!s) return null;
+  var d = new Date(s+'T00:00:00');
+  return isNaN(d.getTime()) ? null : d;
+}
+function addMonthsClamped(d, k){
+  var y = d.getFullYear(), m = d.getMonth()+k;
+  var last = new Date(y, m+1, 0).getDate();
+  return new Date(y, m, Math.min(d.getDate(), last));
+}
+function isLeapYear(y){ return (y%4===0 && y%100!==0) || y%400===0; }
+function interestBetween(bal, ratePct, d1, d2){
+  if(!(d2>d1) || bal<=0) return 0;
+  var cur = d1, total = 0;
+  while(cur < d2){
+    var yearEnd = new Date(cur.getFullYear()+1, 0, 1);
+    var segEnd = yearEnd < d2 ? yearEnd : d2;
+    var days = Math.round((segEnd-cur)/86400000);
+    total += bal*ratePct/100*days/(isLeapYear(cur.getFullYear())?366:365);
+    cur = segEnd;
+  }
+  return total;
+}
+function annuityPayment(balance, r, n){
+  if(n<=0) return balance;
+  return r>0 ? balance*r/(1-Math.pow(1+r,-n)) : balance/n;
+}
+
+function simulateLoan(l, useExtras){
+  var A = l.amount||0, ratePct = l.rate||0, rm = ratePct/1200, N = Math.round(l.termMonths||0);
+  var override = l.paymentOverride||0;
+  var start = parseISODate(l.startDate);
+  if(!start){ start = new Date(); start.setHours(0,0,0,0); }
+  var P = override>0 ? override : annuityPayment(A, rm, N);
+  var extras = [];
+  if(useExtras){
+    (l.extras||[]).forEach(function(x){
+      var d = parseISODate(x.date);
+      if(d && (x.amount||0)>0) extras.push({date:d, amount:x.amount});
+    });
+    extras.sort(function(a,b){ return a.date-b.date; });
+  }
+  var rows = [], bal = A, cursor = start, accrued = 0, ei = 0, underpay = false;
+  for(var k=1; k<=N && bal>0.005; k++){
+    var pd = addMonthsClamped(start, k);
+    while(ei<extras.length && extras[ei].date<pd && bal>0.005){
+      var ex = extras[ei++];
+      var exd = ex.date < cursor ? cursor : ex.date;
+      // The bank takes the interest accrued up to the day of the early
+      // repayment out of that very payment; the rest reduces the principal.
+      accrued += interestBetween(bal, ratePct, cursor, exd);
+      var exDays = Math.round((exd-cursor)/86400000);
+      var exBal = bal;
+      cursor = exd;
+      var exInt = Math.min(accrued, ex.amount);
+      accrued -= exInt;
+      var exPrin = Math.min(ex.amount-exInt, bal);
+      bal -= exPrin;
+      rows.push({extra:true, date:exd, amount:exInt+exPrin, interest:exInt, principal:exPrin, days:exDays, balBefore:exBal, balance:Math.max(0,bal)});
+      if(bal>0.005) P = annuityPayment(bal, rm, N-k+1);
+    }
+    if(bal<=0.005) break;
+    var accDays = Math.round((pd-cursor)/86400000);
+    accrued += interestBetween(bal, ratePct, cursor, pd);
+    cursor = pd;
+    var pay = (k===N) ? bal+accrued : Math.min(P, bal+accrued);
+    if(k<N && P<accrued) underpay = true;
+    var principal = pay-accrued;
+    bal -= principal;
+    rows.push({extra:false, n:k, date:pd, days:accDays, pay:pay, interest:accrued, principal:principal, balance:Math.max(0,bal), P:P});
+    accrued = 0;
+  }
+  return {rows:rows, underpay:underpay, hasDate:!!parseISODate(l.startDate)};
+}
+
+function loanStats(l){
+  var A = l.amount||0, N = Math.round(l.termMonths||0);
+  var override = l.paymentOverride||0;
+  if(A<=0 || N<=0) return {ok:false, payment: override};
+  var annuity = annuityPayment(A, (l.rate||0)/1200, N);
+  var sim = simulateLoan(l, true), plain = simulateLoan(l, false);
+  var today = new Date(); today.setHours(0,0,0,0);
+  var paidCount=0, total=0, pPaid=0, iPaid=0, payPaid=0, pLeft=0, iLeft=0, payLeft=0;
+  var extraPaid=0, extraLeft=0, nextRow=null, lastRow=null;
+  sim.rows.forEach(function(row){
+    var done = row.date <= today;
+    if(row.extra){
+      if(done){ extraPaid+=row.amount; pPaid+=row.principal; iPaid+=row.interest; payPaid+=row.amount; }
+      else { extraLeft+=row.amount; pLeft+=row.principal; iLeft+=row.interest; payLeft+=row.amount; }
+    } else {
+      total++; lastRow=row;
+      if(done){ paidCount++; pPaid+=row.principal; iPaid+=row.interest; payPaid+=row.pay; }
+      else { pLeft+=row.principal; iLeft+=row.interest; payLeft+=row.pay; if(!nextRow) nextRow=row; }
+    }
+  });
+  var interestNoExtras = plain.rows.reduce(function(s,row){ return s+row.interest; }, 0);
+  var P = nextRow ? nextRow.P : (lastRow ? lastRow.P : (override>0?override:annuity));
+  return {
+    ok:true, underpay:sim.underpay, hasDate:sim.hasDate, payment:P, annuity:annuity, overridden:override>0,
+    lastPay: lastRow ? lastRow.pay : 0, rows:sim.rows, nextRow:nextRow,
+    totalPayments:total, paidCount:paidCount, leftCount:total-paidCount,
+    principalPaid:pPaid, interestPaid:iPaid, paidTotal:payPaid,
+    principalLeft:pLeft, interestLeft:iLeft, payLeft:payLeft,
+    interestTotal:iPaid+iLeft, active: paidCount<total, end: lastRow ? lastRow.date : null,
+    extraPaid:extraPaid, extraTotal:extraPaid+extraLeft,
+    interestSaved:Math.max(0, interestNoExtras-(iPaid+iLeft)),
+    hasExtras: sim.rows.some(function(r){return r.extra;})
+  };
+}
+
+
+function loansMonthlyTotal(){
+  return STATE.loans.reduce(function(s,l){
+    var st = loanStats(l);
+    if(!st.ok) return s + (l.paymentOverride||0);
+    return s + (st.active ? st.payment : 0);
+  }, 0);
+}
+
+var SCHED_OPEN = {};
+function fmtDate(d){ return d.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric'}); }
+function scheduleTable(st){
+  var today = new Date(); today.setHours(0,0,0,0);
+  var nextMarked = false;
+  var body = st.rows.map(function(row){
+    var done = row.date <= today;
+    if(row.extra){
+      return '<tr class="extra"><td>'+(done?'✓ ':'')+'досрочно</td><td>'+fmtDate(row.date)+'</td><td>'+fmt(row.amount)+'</td><td>'+fmt(row.interest)+'</td><td>'+fmt(row.principal)+'</td><td>'+fmt(row.balance)+'</td><td>'+row.days+'</td></tr>';
+    }
+    var cls = done ? 'done' : (!nextMarked ? 'next' : '');
+    if(!done) nextMarked = true;
+    var iCell = fmt(row.interest);
+    return '<tr class="'+cls+'"><td>'+(done?'✓ ':'')+row.n+'</td><td>'+fmtDate(row.date)+'</td><td>'+fmt(row.pay)+'</td><td>'+iCell+'</td><td>'+fmt(row.principal)+'</td><td>'+fmt(row.balance)+'</td><td>'+row.days+'</td></tr>';
+  }).join('');
+  return '<div class="sched-wrap sched-scroll"><table class="sched"><thead><tr><th>№</th><th>Дата</th><th>Платёж</th><th>Проценты</th><th>Основной долг</th><th>Остаток долга</th><th>Дней</th></tr></thead><tbody>'+body+'</tbody></table></div>';
+}
+
+function pageLoans(){
+  var stats = STATE.loans.map(loanStats);
+  var monthly = loansMonthlyTotal();
+  var sumLeft = 0, sumPrincipalLeft = 0, sumInterestPaid = 0;
+  stats.forEach(function(st){ if(st.ok){ sumLeft+=st.payLeft; sumPrincipalLeft+=st.principalLeft; sumInterestPaid+=st.interestPaid; } });
+
+  var html = '<div class="banner info"><span>Впишите сумму, ставку (годовую), срок и дату взятия — платёж и график посчитаются сами. Проценты начисляются каждый день на остаток долга (ставка ÷ 365 или 366 × число дней), а платятся раз в месяц, поэтому в коротких месяцах процентов меньше, в длинных — больше. Если платёж по договору отличается, впишите его в поле «Платёж по договору».</span></div>';
+
+  html += '<div class="card"><h2>Все кредиты</h2><div class="stat-grid">'+
+    statCard('purple','card','Платёж в месяц (действующие)', fmt(monthly)) +
+    statCard('danger','list','Осталось заплатить', fmt(sumLeft)) +
+    statCard('amber','list','Основной долг остался', fmt(sumPrincipalLeft)) +
+    statCard('blue','tag','Проценты уже выплачены', fmt(sumInterestPaid)) +
+    '</div>'+
+    '<button class="btn" data-role="sync-loans">Подставить '+fmt(monthly)+' в «Обязательные расходы → Кредиты»</button>'+
+    '</div>';
+
+  html += '<div class="rows">';
+  STATE.loans.forEach(function(l, idx){
+    var st = stats[idx];
+    html += '<div class="entity-card">'+
+      '<div class="head-row"><input type="text" data-role="loan-name" data-id="'+l.id+'" value="'+esc(l.name)+'"><button class="iconbtn" data-role="remove-loan" data-id="'+l.id+'" title="Удалить">✕</button></div>'+
+      '<div class="fields">'+
+        field('Сумма кредита','loan-amount', l.amount, 10000, l.id) +
+        field('Ставка, % годовых','loan-rate', l.rate, 0.1, l.id) +
+        field('Срок, месяцев','loan-term', l.termMonths, 1, l.id) +
+      '</div>'+
+      '<div class="fields">'+
+        '<div class="field"><label class="flabel">Дата взятия</label><input type="date" data-role="loan-start" data-id="'+l.id+'" value="'+esc(l.startDate||'')+'"></div>'+
+        field('Платёж по договору (если отличается)','loan-override', l.paymentOverride, 100, l.id) +
+        '<div class="field"><div class="flabel">Платёж в месяц</div><div style="padding-top:6px;font-size:16px;font-weight:800;font-variant-numeric:tabular-nums;">'+fmt(st.payment||0)+'</div>'+
+          (st.ok && st.overridden ? '<div class="hint">расчётный: '+fmt(st.annuity)+'</div>' : '')+'</div>'+
+      '</div>';
+
+    html += '<div class="sub" style="margin-top:2px;font-weight:600;color:var(--ink);">Досрочное погашение <span class="hint" style="font-weight:400;">— вся вносимая сумма: сначала из неё списываются проценты, накопленные к этому дню, остальное идёт в основной долг; платёж уменьшается, срок остаётся</span></div>';
+    (l.extras||[]).forEach(function(x){
+      html += '<div class="sub-row" style="grid-template-columns:1fr 1fr 32px;">'+
+        '<input type="date" data-role="extra-date" data-id="'+x.id+'" data-loan="'+l.id+'" value="'+esc(x.date||'')+'">'+
+        '<input type="number" min="0" step="1000" data-role="extra-amount" data-id="'+x.id+'" data-loan="'+l.id+'" value="'+(x.amount||0)+'">'+
+        '<button class="iconbtn" data-role="remove-extra" data-id="'+x.id+'" data-loan="'+l.id+'" title="Удалить">✕</button></div>';
+    });
+    html += '<button class="btn ghost" data-role="add-extra" data-loan="'+l.id+'">+ Добавить досрочное погашение</button>';
+    if(st.ok && st.hasExtras){
+      html += '<div class="hint">Внесено досрочно: <strong>'+fmt(st.extraTotal)+'</strong> · платёж теперь <strong>'+fmt(st.payment)+'</strong> · экономия на процентах <strong>'+fmt(st.interestSaved)+'</strong></div>';
+    }
+
+    if(!st.ok){
+      html += '<div class="hint">Заполните сумму, срок и дату — тогда появится график: сколько выплачено основного долга и процентов, сколько осталось.</div>';
+    } else {
+      var total = st.paidTotal + st.payLeft;
+      var pPct = total>0 ? st.principalPaid/total*100 : 0;
+      var iPct = total>0 ? st.interestPaid/total*100 : 0;
+      var donePct = l.amount>0 ? st.principalPaid/l.amount*100 : 0;
+      if(st.underpay){
+        html += '<div class="banner"><span>Платёж по договору меньше начисленных за месяц процентов — долг так не закроется. Проверьте цифру.</span></div>';
+      }
+      if(!st.hasDate){
+        html += '<div class="hint">Не указана дата взятия — график построен от сегодняшнего дня, отметки «оплачено» неточные.</div>';
+      }
+      html += '<div class="split-bar"><span style="width:'+pPct.toFixed(1)+'%;background:var(--good)"></span><span style="width:'+iPct.toFixed(1)+'%;background:var(--amber)"></span></div>'+
+        '<div class="split-legend">'+
+          '<span><span class="dot" style="background:var(--good)"></span>Основной долг выплачен — '+fmt(st.principalPaid)+'</span>'+
+          '<span><span class="dot" style="background:var(--amber)"></span>Проценты выплачены — '+fmt(st.interestPaid)+'</span>'+
+          '<span><span class="dot" style="background:var(--surface-2);border:1px solid var(--border)"></span>Осталось заплатить — '+fmt(st.payLeft)+'</span>'+
+        '</div>'+
+        '<div class="stat-grid">'+
+          statCard('good','check','Платежей сделано', st.paidCount+' из '+st.totalPayments) +
+          statCard('danger','list','Осталось заплатить', fmt(st.payLeft), st.active?null:{cls:'ok',text:'кредит закрыт'}) +
+          statCard('amber','card','Основной долг остался', fmt(st.principalLeft)) +
+          statCard('blue','tag','Переплата по процентам', fmt(st.interestTotal)) +
+        '</div>'+
+        '<div class="hint">Погашено '+pctFmt(donePct)+' основного долга'+(st.end? ' · последний платёж ≈ '+st.end.toLocaleDateString('ru-RU',{month:'long',year:'numeric'}) : '')+
+          ' · из оставшихся '+fmt(st.payLeft)+' — проценты '+fmt(st.interestLeft)+
+          (Math.abs(st.lastPay-st.payment)>1 ? ' · последний платёж '+fmt(st.lastPay)+' (добирает разницу из-за разного числа дней в месяцах)' : '')+'</div>';
+      if(st.nextRow){
+        var nr = st.nextRow;
+        html += '<div class="stat-grid">'+
+          statCard('purple','card','Ближайший платёж — '+fmtDate(nr.date), fmt(nr.pay)) +
+          statCard('blue','tag','…из них проценты (за '+nr.days+' дн.)', fmt(nr.interest)) +
+          statCard('good','check','…из них основной долг', fmt(nr.principal)) +
+          statCard('amber','list','Остаток долга после платежа', fmt(nr.balance)) +
+          '</div>';
+      }
+      html += '<button class="btn ghost" data-role="toggle-sched" data-loan="'+l.id+'">'+(SCHED_OPEN[l.id]?'Скрыть':'Показать')+' график платежей ('+st.totalPayments+')</button>';
+      if(SCHED_OPEN[l.id]) html += scheduleTable(st);
+    }
+    html += '</div>';
+  });
+  html += '</div><button class="btn ghost" data-role="add-loan">+ Добавить кредит</button>';
+  return html;
+}
+
+// ---- Кредитные карты ----
+function pageDebts(){
+  var totalLimit = STATE.debts.reduce(function(s,d){return s+(d.limit||0);},0);
+  var html = '<div class="banner info"><span>Вводите «Лимит» и «Доступно сейчас» — ровно как показывает банковское приложение. «Долг» считается сам (лимит минус доступно). «Платёж в этом месяце» подставляется автоматически при изменении дохода — можно поправить вручную.</span></div>';
+  html += '<div class="card"><h2>Остаток по всем картам</h2><div class="stat-grid">'+
+    statCard('danger','card','Общий долг', fmt(debtsRemainingTotal())) +
+    statCard('blue','list','Общий лимит', fmt(totalLimit)) +
+    statCard('amber','list','Платежи в этом месяце', fmt(debtsPaymentTotal())) +
+    '</div></div>';
+
+  html += '<div class="rows">';
+  STATE.debts.forEach(function(d){
+    var limit = d.limit||0, available = d.available||0, payment = d.payment||0;
+    var debt = debtAmount(d);
+    var utilPct = limit>0? Math.min(100,Math.max(0, debt/limit*100)) : 0;
+    var monthsLeft = payment>0? Math.ceil(debt/payment) : null;
+    var utilColor = utilPct>=80?'var(--danger)':(utilPct>=50?'var(--warn)':'var(--good)');
+    html += '<div class="entity-card">'+
+      '<div class="head-row"><input type="text" data-role="debt-name" data-id="'+d.id+'" value="'+esc(d.name)+'"><button class="iconbtn" data-role="remove-debt" data-id="'+d.id+'" title="Удалить">✕</button></div>'+
+      '<div class="fields">'+
+        field('Лимит','debt-limit', limit, 1000, d.id) +
+        field('Доступно сейчас','debt-available', available, 1000, d.id) +
+        field('Платёж в этом месяце','debt-payment', payment, 500, d.id) +
+      '</div>'+
+      '<div class="suggest-row"><span class="hint">Долг сейчас, считается сам:</span><strong style="font-size:15px;">'+fmt(debt)+'</strong></div>'+
+      '<div class="progress"><div style="width:'+utilPct.toFixed(1)+'%;background:'+utilColor+'"></div></div>'+
+      '<div class="hint">Использовано '+pctFmt(utilPct)+' лимита'+(monthsLeft? ' · ещё ~'+monthsLeft+' мес. в этом темпе' : '')+'</div>'+
+      (payment>0 ? '<label class="check-item'+(d.paid?' done':'')+'"><input type="checkbox" data-role="debt-paid" data-id="'+d.id+'"'+(d.paid?' checked':'')+'><span>Платёж '+fmt(payment)+' в этом месяце внесён</span></label>' : '')+
+      '</div>';
+  });
+  html += '</div><button class="btn ghost" data-role="add-debt">+ Добавить карту / кредит</button>';
+  return html;
+}
+
+// ---- Цели ----
+function pageGoals(){
+  var html = '<div class="banner info"><span>«Взнос в этом месяце» считается сам при изменении дохода. Сначала идут цели с датой — каждой столько, сколько нужно откладывать в месяц, чтобы успеть к сроку (ближайшие даты первыми; не больше 70% свободных денег, пока срок дальше 3 месяцев). Затем кредитные карты, потом цели без даты. Можно поправить вручную — до следующего пересчёта.</span></div>'+
+    '<button class="btn ghost" data-role="redistribute">Пересчитать взносы</button>';
+  var sumTarget = 0, sumCurrent = 0;
+  STATE.savingsGoals.forEach(function(g){ sumTarget += g.target||0; sumCurrent += Math.min(g.current||0, g.target||0); });
+  if(STATE.savingsGoals.length>0){
+    var sumPct = sumTarget>0 ? sumCurrent/sumTarget*100 : 0;
+    html += '<div class="card"><h2>Все цели</h2><div class="stat-grid">'+
+      statCard('good','check','Уже отложено', fmt(sumCurrent)) +
+      statCard('purple','list','Выполнено', pctFmt(sumPct)) +
+      statCard('amber','card','Осталось до целей', fmt(Math.max(0,sumTarget-sumCurrent))) +
+      statCard('blue','tag','Сумма всех целей', fmt(sumTarget)) +
+      '</div>'+
+      '<div class="progress accentbar"><div style="width:'+sumPct.toFixed(1)+'%"></div></div></div>';
+  }
+  html += '<div class="rows">';
+  if(STATE.savingsGoals.length===0){
+    html += '<div class="empty">Целей пока нет.</div>';
+  }
+  STATE.savingsGoals.forEach(function(g){
+    var target = g.target||0, current = g.current||0, contribution = g.contribution||0;
+    var pct = target>0? Math.min(100, current/target*100) : 0;
+    var remaining = Math.max(0, target-current);
+    var monthsLeft = contribution>0? Math.ceil((target-current)/contribution) : null;
+    var dl = parseISODate(g.deadline), dlHtml = '';
+    if(dl){
+      var todayD = new Date(); todayD.setHours(0,0,0,0);
+      var daysLeft = Math.round((dl-todayD)/86400000);
+      if(remaining<=0){
+        dlHtml = '<div class="hint">К '+fmtDate(dl)+' нужно '+fmt(target)+' — уже собрано.</div>';
+      } else if(daysLeft<=0){
+        dlHtml = '<div class="banner"><span>Срок '+fmtDate(dl)+' наступил, а до цели не хватает '+fmt(remaining)+'.</span></div>';
+      } else {
+        var mLeft = Math.max(1, Math.ceil(daysLeft/30.4375));
+        var need = remaining/mLeft;
+        var okPace = contribution*mLeft >= remaining;
+        dlHtml = '<div class="stat-grid">'+
+          statCard('blue','list','Дата, к которой нужны деньги', fmtDate(dl)) +
+          statCard('purple','list','Осталось до даты', daysLeft+' дн. (~'+mLeft+' мес.)') +
+          statCard('amber','card','Откладывать в месяц', fmt(Math.ceil(need))) +
+          '</div>'+
+          '<div class="hint">'+(contribution>0
+            ? (okPace ? 'Взнос '+fmt(contribution)+' в месяц — успеваете к дате.'
+                      : 'Взнос '+fmt(contribution)+' в месяц — к дате не хватит ' + fmt(remaining-contribution*mLeft)+'. Нужно ≈ '+fmt(Math.ceil(need))+' в месяц.')
+            : 'Чтобы успеть к дате, нужно откладывать ≈ '+fmt(Math.ceil(need))+' в месяц.')+'</div>';
+      }
+    }
+    html += '<div class="entity-card">'+
+      '<div class="head-row"><input type="text" data-role="goal-name" data-id="'+g.id+'" value="'+esc(g.name)+'"><button class="iconbtn" data-role="remove-goal" data-id="'+g.id+'" title="Удалить">✕</button></div>'+
+      '<div class="fields">'+
+        field('Цель, сумма','goal-target', target, 1000, g.id) +
+        field('Накоплено сейчас','goal-current', current, 1000, g.id) +
+        field('Взнос в этом месяце','goal-contribution', contribution, 500, g.id) +
+      '</div>'+
+      '<div class="fields"><div class="field"><label class="flabel">Когда нужны деньги (дата)</label><input type="date" data-role="goal-date" data-id="'+g.id+'" value="'+esc(g.deadline||'')+'"></div></div>'+
+      dlHtml+
+      '<div class="stat-grid">'+
+        statCard('good','check','Уже отложено', fmt(current)) +
+        statCard('purple','list','Выполнено', pctFmt(pct)) +
+        statCard(remaining>0?'amber':'good', remaining>0?'card':'check', 'Осталось до цели', remaining>0 ? fmt(remaining) : 'цель достигнута') +
+      '</div>'+
+      '<div class="progress accentbar"><div style="width:'+pct.toFixed(1)+'%"></div></div>'+
+      '<div class="hint">'+fmt(current)+' из '+fmt(target)+(monthsLeft && monthsLeft>0? ' · ещё ~'+monthsLeft+' мес. в этом темпе' : '')+'</div>'+
+      (contribution>0 ? '<label class="check-item'+(g.paid?' done':'')+'"><input type="checkbox" data-role="goal-paid" data-id="'+g.id+'"'+(g.paid?' checked':'')+'><span>Взнос '+fmt(contribution)+' в этом месяце внесён</span></label>' : '')+
+      '</div>';
+  });
+  html += '</div><button class="btn ghost" data-role="add-goal">+ Добавить цель</button>';
+  return html;
+}
+
+function pageCushion(){
+  var needsSum = catSum('needs') + fixedTotal();
+  var cushionTarget = (STATE.cushionGoal.targetMonths||0)*needsSum;
+  var cushionPct = cushionTarget>0? Math.min(100, (STATE.cushionGoal.current||0)/cushionTarget*100) : 0;
+
+  var html = '<div class="banner info"><span>«Добавить в этом месяце» подставляется автоматически при изменении дохода — после карт и целей, но перед развлечениями. Можно поправить вручную — до следующего пересчёта.</span></div>';
+  html += '<div class="card"><h2>Финансовая подушка</h2>'+
+    '<div class="sub">Цель — покрыть обязательные расходы (включая фиксированные платежи) на несколько месяцев вперёд. Пока активны цели по картам, приоритет ниже.</div>';
+  html += '<div class="field-row">'+field('Сейчас накоплено','cushion-current', STATE.cushionGoal.current)+field('Добавить в этом месяце','cushion-contribution', STATE.cushionGoal.contribution)+'</div>';
+  html += '<div class="field-row">'+field('Цель, месяцев расходов','cushion-target-months', STATE.cushionGoal.targetMonths, 0.5)+
+    '<div class="field"><div class="flabel">Целевая сумма</div><div class="hint" style="padding-top:8px">'+fmt(cushionTarget)+' ('+STATE.cushionGoal.targetMonths+' × обязательные расходы)</div></div></div>';
+  html += '<div class="progress accentbar"><div style="width:'+cushionPct.toFixed(1)+'%"></div></div>'+
+    '<div class="hint">Накоплено '+pctFmt(cushionPct)+' от цели</div>'+
+    ((STATE.cushionGoal.contribution||0)>0 ? '<label class="check-item'+(STATE.cushionGoal.paid?' done':'')+'"><input type="checkbox" data-role="cushion-paid"'+(STATE.cushionGoal.paid?' checked':'')+'><span>Пополнение '+fmt(STATE.cushionGoal.contribution)+' в этом месяце внесено</span></label>' : '')+
+    '</div>';
+  return html;
+}
+
+function pageAnalyticsFood(){
+  var income = totalIncome();
+  var staples = foodBasketStaplesTotal();
+  var adjusted = foodBasketAdjustedTotal();
+  var pctOfIncome = income>0 ? adjusted/income*100 : 0;
+  var currentPlan = (STATE.categories.filter(function(c){return c.id==='food';})[0]||{}).amount||0;
+  var diff = adjusted - currentPlan;
+
+  var html = '<div class="chatnote">'+icon('chat')+'<span>Цены — из реального сравнения магазинов в Калининграде (Пятёрочка и SPAR), 1–2 сентября 2026. Дальше можно присылать мне свежие чеки/скриншоты в чат, и я буду обновлять корзину под актуальные цены.</span></div>';
+
+  html += '<div class="stat-grid">'+
+    statCard('purple','list','Корзина (основные товары)', fmt(staples)) +
+    statCard('amber','tag','С запасом на доп. покупки', fmt(adjusted)) +
+    statCard('blue','income','% от вашего дохода', income>0? pctFmt(pctOfIncome) : '—', income===0?{cls:'bad',text:'впишите доход'}:null) +
+    statCard(diff>0?'danger':'good','grid', diff>0?'План «Еда» занижен на':'Запас в плане «Еда»', fmt(Math.abs(diff))) +
+    '</div>';
+
+  html += '<div class="card"><h2>Множитель на не учтённые покупки</h2>'+
+    '<div class="sub">Расчёт по 24 базовым товарам не включает сыр, колбасу, чай/кофе, специи, снеки и т.п. Множитель компенсирует это (по умолчанию ×1.3 — то есть +30%).</div>'+
+    '<div class="field-row">'+
+      '<div class="field"><label class="flabel">Множитель</label><input type="number" min="1" step="0.05" data-role="food-multiplier" value="'+STATE.foodAnalytics.multiplier+'"></div>'+
+      '<div class="field"><div class="flabel">Итоговая корзина</div><div class="hint" style="padding-top:8px;font-size:14px;font-weight:700;color:var(--ink)">'+fmt(adjusted)+'</div></div>'+
+    '</div>'+
+    '<div class="suggest-row"><span class="hint">Сейчас в плане «Еда» (страница «Категории»): '+fmt(currentPlan)+'.</span>'+
+      '<button class="link" data-role="apply-food-plan">Подставить '+fmt(adjusted)+' в план «Еда»</button></div>'+
+    '</div>';
+
+  html += '<div class="card"><h2>Ориентир по проценту от дохода</h2>'+
+    '<div class="sub">В сбалансированном месячном бюджете еда обычно занимает около <strong>10–15% дохода</strong> (при делении вроде 50/20/30, где всё повседневное обязательное — около 50%). '+
+    (income>0
+      ? (pctOfIncome>15
+          ? 'У вас корзина по реальным ценам получается '+pctFmt(pctOfIncome)+' от дохода — выше ориентира, это нормально при доходе ниже среднего или высоких фиксированных платежах, но стоит держать в поле зрения.'
+          : 'У вас корзина по реальным ценам — '+pctFmt(pctOfIncome)+' от дохода, в пределах ориентира.')
+      : 'Впишите доход на странице «Доходы», чтобы увидеть свой процент.')+
+    '</div></div>';
+
+  html += '<div class="card"><h2>Состав корзины (2 взрослых, в месяц)</h2>'+
+    '<div class="col-labels"><span>Товар</span><span>Кол-во</span><span>Цена</span><span>Сумма</span></div><div class="rows">';
+  FOOD_BASKET.forEach(function(it){
+    html += '<div class="cat-row" style="grid-template-columns:1fr 90px 90px 90px;">'+
+      '<span class="cat-name">'+esc(it.name)+(it.note?'<span class="delta under">'+esc(it.note)+'</span>':'')+'</span>'+
+      '<span class="pct">'+it.qty+' '+esc(it.unit)+'</span>'+
+      '<span class="pct">'+fmt(it.price)+'</span>'+
+      '<span class="fact">'+fmt(it.qty*it.price)+'</span></div>';
+  });
+  html += '</div><div class="total-line"><span>Итого (основные товары)</span><span class="v">'+fmt(staples)+'</span></div>'+
+    '<div class="hint">Источник большинства цен: <a href="'+FOOD_BASKET_URL+'" target="_blank" rel="noopener" style="color:var(--accent)">'+esc(FOOD_BASKET_SOURCE)+'</a> (среднее между Пятёрочкой и SPAR). Полуфабрикаты (рыбные котлеты, сырные палочки, наггетсы, куриные котлеты) — по ценам, которые вы купили в этом месяце, а не из статьи. Фарш убрал — вы делаете его сами.</div>'+
+    '</div>';
+
+  return html;
+}
+
+function clamp(n, lo, hi){ return Math.max(lo, Math.min(hi, n)); }
+
+function financialScore(){
+  var income = totalIncome();
+  var fixed = fixedTotal();
+  var needs = catSum('needs');
+  var debtRem = debtsRemainingTotal();
+  var debtPay = debtsPaymentTotal();
+  var goalsContrib = goalsContribTotal();
+  var cushionContrib = STATE.cushionGoal.contribution||0;
+  var planned = needsGroupTotal()+wantsGroupTotal()+goalsGroupTotal();
+  var leftover = income - planned;
+  var cushionTarget = (STATE.cushionGoal.targetMonths||0)*(fixed+needs);
+  var haveIncome = income>0;
+
+  var metrics = [];
+
+  // 1. Emergency cushion coverage
+  var cushionPct = cushionTarget>0 ? clamp((STATE.cushionGoal.current||0)/cushionTarget*100, 0, 100) : (STATE.cushionGoal.current>0?100:0);
+  metrics.push({
+    key:'cushion', label:'Финансовая подушка', score: cushionTarget>0? cushionPct : 40,
+    detail: cushionTarget>0
+      ? 'Накоплено '+pctFmt(cushionPct)+' от цели ('+fmt(STATE.cushionGoal.current||0)+' из '+fmt(cushionTarget)+', на '+STATE.cushionGoal.targetMonths+' мес. расходов).'
+      : 'Цель подушки ещё не посчитана — впишите повседневные и обязательные расходы.',
+    tip: cushionPct<50 ? 'Пока подушка меньше половины цели — при потере дохода запаса хватит меньше чем на '+STATE.cushionGoal.targetMonths+' мес. Стоит откладывать регулярно, даже понемногу.' : null
+  });
+
+  // 2. Living within means FOR REAL — actual spending vs actual income.
+  // This is the most important check, so it counts double in the overall
+  // score: a plan can look fine on paper while real spending already runs
+  // a deficit.
+  var actualTotal = txTotal() + fixedActualTotal();
+  var realLeftover = income - actualTotal;
+  var realPct = haveIncome ? realLeftover/income*100 : 0;
+  var realScore = !haveIncome ? 40 : (realPct>=0 ? 100 : clamp(100 + realPct*4, 0, 100));
+  metrics.push({
+    key:'real-balance', label:'Реальный баланс (факт)', weight:2, score: realScore,
+    detail: !haveIncome ? 'Доход за месяц ещё не внесён.' :
+      realLeftover>=0 ? 'Реальные траты ('+fmt(actualTotal)+') укладываются в доход ('+fmt(income)+') — свободно '+fmt(realLeftover)+'.' :
+      'Реальные траты ('+fmt(actualTotal)+') БОЛЬШЕ дохода ('+fmt(income)+') на '+fmt(-realLeftover)+' — по факту вы живёте в минус.',
+    tip: (haveIncome && realLeftover<0) ? 'Это главная проблема: расходы уже сейчас превышают доход на '+fmt(-realLeftover)+'. Разница покрывается за счёт кредитных карт или сбережений и не может продолжаться долго — нужно либо сократить траты (см. блок ниже, что вышло за план), либо найти дополнительный доход.' : null
+  });
+
+  // 3. Budget discipline — actual vs planned spending on everyday categories
+  // (fixed obligations are excluded: they have no plan/actual gap by design).
+  var categoryPlan = catSum('needs')+catSum('wants');
+  var categoryActual = txTotal();
+  var overspendCat = categoryActual - categoryPlan;
+  var disciplineScore = categoryPlan<=0 ? (categoryActual<=0?100:30) : clamp(100 - Math.max(0,overspendCat)/categoryPlan*100, 0, 100);
+  metrics.push({
+    key:'discipline', label:'Дисциплина по категориям', score: disciplineScore,
+    detail: categoryPlan>0
+      ? 'Факт по повседневным категориям — '+fmt(categoryActual)+' против плана '+fmt(categoryPlan)+' — '+(overspendCat>0? 'перерасход '+fmt(overspendCat) : 'в пределах плана, запас '+fmt(-overspendCat))+'.'
+      : (categoryActual>0 ? 'Траты есть ('+fmt(categoryActual)+'), но план по категориям ещё не задан — сравнивать не с чем.' : 'План по категориям ещё не задан.'),
+    tip: overspendCat>0 ? 'Смотрите на дашборде блоки «Ежемесячные»/«Ежедневные» — там теперь показан факт против плана по каждой категории, видно, где именно перерасход.' : null
+  });
+
+  // 4. Savings / debt-payoff rate
+  var savingsRate = haveIncome ? (debtPay+goalsContrib+cushionContrib)/income*100 : 0;
+  var savingsScore = haveIncome ? clamp(savingsRate/20*100, 0, 100) : 40;
+  metrics.push({
+    key:'savings', label:'Норма сбережений и платежей по долгу', score: savingsScore,
+    detail: haveIncome
+      ? pctFmt(savingsRate)+' дохода в этом месяце идёт на карты, цели и подушку вместе ('+fmt(debtPay+goalsContrib+cushionContrib)+' из '+fmt(income)+'). Ориентир — от 20%.'
+      : 'Доход ещё не внесён.',
+    tip: haveIncome && savingsRate<20 ? 'Меньше 20% дохода уходит на долг/цели/резерв — обычный ориентир для устойчивого бюджета. Если сейчас в приоритете закрытие карт, это может быть осознанным выбором, но стоит проверять каждый месяц.' : null
+  });
+
+  // 5. Debt burden relative to income
+  var debtMonths = haveIncome ? debtRem/income : 0;
+  var debtScore = debtRem<=0 ? 100 : (haveIncome ? clamp(100 - (debtMonths-1)*15, 0, 100) : 40);
+  metrics.push({
+    key:'debt', label:'Долговая нагрузка', score: debtScore,
+    detail: debtRem<=0 ? 'Кредитных долгов нет — отлично.' :
+      haveIncome ? 'Остаток долга по картам — '+fmt(debtRem)+', это ≈'+debtMonths.toFixed(1)+' × ваш месячный доход.' :
+      'Остаток долга по картам — '+fmt(debtRem)+'.',
+    tip: debtRem>0 && debtMonths>1 ? 'Долг больше одного месячного дохода — это ощутимая нагрузка. Автораспределение уже направляет свободные деньги в первую очередь на карты, но по возможности избегайте новых трат по ним.' : null
+  });
+
+  // 6. Fixed obligations share of income
+  var fixedPct = haveIncome ? fixed/income*100 : 0;
+  var fixedScore = !haveIncome ? 40 : (fixedPct<=30 ? 100 : clamp(100-(fixedPct-30)*2, 0, 100));
+  metrics.push({
+    key:'fixed', label:'Доля обязательных платежей', score: fixedScore,
+    detail: haveIncome
+      ? 'Фиксированные платежи (ипотека, кредиты, гараж, подписки, авто) — '+pctFmt(fixedPct)+' дохода ('+fmt(fixed)+' из '+fmt(income)+'). Ориентир — не больше 30–40%.'
+      : 'Доход ещё не внесён.',
+    tip: haveIncome && fixedPct>40 ? 'Обязательные платежи съедают больше 40% дохода — это мало гибкости на случай, если доход упадёт. Кредит на ремонт закончится в ноябре — станет немного легче.' : null
+  });
+
+  var weightSum = metrics.reduce(function(s,m){return s+(m.weight||1);},0);
+  var overall = metrics.reduce(function(s,m){return s+m.score*(m.weight||1);},0)/weightSum;
+  return {overall: overall, metrics: metrics, haveIncome: haveIncome};
+}
+
+function scoreGrade(score){
+  if(score>=80) return {label:'Уверенный уровень', color:'good'};
+  if(score>=60) return {label:'Хорошая база, есть куда расти', color:'blue'};
+  if(score>=40) return {label:'Есть слабые места', color:'warn'};
+  return {label:'Стоит пересобрать бюджет', color:'danger'};
+}
+
+function pageAnalyticsScore(){
+  var fs = financialScore();
+  var grade = scoreGrade(fs.overall);
+
+  var html = '<div class="chatnote">'+icon('chat')+'<span>Оценка построена на ваших реальных цифрах в приложении (доход, обязательные платежи, долги, подушка, цели) — не на общих советах из интернета. Чем точнее у вас внесены доход и траты (в том числе через присланные мне скриншоты банка), тем честнее оценка.</span></div>';
+
+  if(!fs.haveIncome){
+    html += '<div class="banner"><span>Доход за этот месяц ещё не внесён — оценка ниже неполная. Впишите доход на странице «Доходы» (или пришлите скриншот зарплаты в чат), чтобы получить точную картину.</span></div>';
+  }
+
+  html += '<div class="card"><div class="head" style="display:flex;align-items:center;justify-content:space-between;">'+
+    '<div><div class="hint">Итоговая оценка</div><div style="font-size:38px;font-weight:800;font-variant-numeric:tabular-nums;">'+Math.round(fs.overall)+'<span style="font-size:18px;color:var(--ink-faint);">/100</span></div></div>'+
+    '<span class="badge" style="background:var(--'+grade.color+'-soft);color:var(--'+grade.color+');font-size:14px;padding:8px 16px;">'+esc(grade.label)+'</span>'+
+    '</div></div>';
+
+  html += '<div class="card"><h2>По каждому пункту</h2><div class="rows">';
+  fs.metrics.forEach(function(m){
+    var g = scoreGrade(m.score);
+    html += '<div style="padding:10px 0;border-bottom:1px solid var(--border);">'+
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;gap:10px;">'+
+        '<strong style="font-size:13px;">'+esc(m.label)+'</strong>'+
+        '<span class="badge" style="background:var(--'+g.color+'-soft);color:var(--'+g.color+');flex-shrink:0;">'+Math.round(m.score)+'/100</span>'+
+      '</div>'+
+      '<div class="progress"><div style="width:'+clamp(m.score,0,100).toFixed(0)+'%;background:var(--'+g.color+')"></div></div>'+
+      '<div class="hint" style="margin-top:5px;">'+esc(m.detail)+'</div>'+
+      (m.tip? '<div class="hint" style="margin-top:3px;color:var(--warn);">'+esc(m.tip)+'</div>' : '')+
+      '</div>';
+  });
+  html += '</div></div>';
+
+  return html;
+}
+
+var expandedMonths = {}; // transient UI state: archivedAt -> bool
+
+function categoryBarsHtml(items){
+  var clean = items.filter(function(it){ return (it.actual||0) > 0; })
+    .sort(function(a,b){ return b.actual-a.actual; });
+  if(clean.length===0) return '<div class="empty">Пока нет трат.</div>';
+  var total = clean.reduce(function(s,it){ return s+it.actual; }, 0);
+  var max = clean[0].actual;
+  var html = '';
+  clean.forEach(function(it){
+    var pctOfTotal = total>0? it.actual/total*100 : 0;
+    var barPct = max>0? it.actual/max*100 : 0;
+    html += '<div style="margin-bottom:9px;">'+
+      '<div style="display:flex;justify-content:space-between;gap:10px;font-size:12.5px;margin-bottom:3px;">'+
+        '<span>'+esc(it.name)+'</span>'+
+        '<span class="hint" style="flex-shrink:0;">'+fmt(it.actual)+' · '+pctFmt(pctOfTotal)+'</span>'+
+      '</div>'+
+      '<div class="progress"><div style="width:'+barPct.toFixed(1)+'%;background:var(--accent)"></div></div>'+
+    '</div>';
+  });
+  return html;
+}
+
+function currentMonthCategoryBreakdown(){
+  var items = STATE.categories.map(function(c){ return {name:c.name, actual: txSumCat(c.id)}; });
+  STATE.fixedExpenses.items.filter(function(it){return it.paid;}).forEach(function(it){ items.push({name:it.name, actual: it.amount||0}); });
+  var subs = subscriptionsPaidTotal();
+  if(subs>0) items.push({name:'Подписки', actual: subs});
+  var car = carPersonalAmount();
+  if(car>0) items.push({name:'Личное на авто', actual: car});
+  return items;
+}
+
+function pageAnalyticsMonths(){
+  var income = totalIncome(), actual = txTotal()+fixedActualTotal();
+  var html = '<div class="chatnote">'+icon('chat')+'<span>Когда цифры за месяц устоялись, нажмите «Начать новый месяц» внизу левой панели — текущие данные сохранятся сюда, а доходы и журнал трат обнулятся для следующего месяца (остатки по картам, целям и подушке просто перенесутся).</span></div>';
+
+  html += '<div class="card"><h2>Текущий месяц: '+esc(STATE.month)+'</h2><div class="sub">Ещё не заархивирован.</div><div class="stat-grid">'+
+    statCard('blue','income','Доход', fmt(income)) +
+    statCard('amber','list','Потрачено', fmt(actual)) +
+    '</div></div>';
+
+  html += '<div class="card"><h2>Куда ушли деньги в этом месяце</h2><div class="sub">Обязательные платежи и повседневные категории вместе, от большего к меньшему.</div>'+
+    categoryBarsHtml(currentMonthCategoryBreakdown()) +
+    '</div>';
+
+  if(STATE.history.length===0){
+    html += '<div class="card"><div class="empty">Архивных месяцев пока нет. Заполните этот месяц и нажмите «Начать новый месяц», когда будете готовы перейти к следующему.</div></div>';
+    return html;
+  }
+
+  var hist = STATE.history.slice().reverse();
+  var maxAmt = Math.max.apply(null, hist.map(function(h){return Math.max(h.income,h.actual);}).concat([1, income, actual]));
+
+  html += '<div class="card"><h2>Архив по месяцам</h2><div class="sub">Новые месяцы сверху. Верхняя полоса — доход, нижняя — фактические траты.</div><div class="rows">';
+  hist.forEach(function(h){
+    var incPct = maxAmt>0? h.income/maxAmt*100 : 0;
+    var spentPct = maxAmt>0? h.actual/maxAmt*100 : 0;
+    var key = h.archivedAt || h.month;
+    var isOpen = !!expandedMonths[key];
+    html += '<div style="padding:10px 0;border-bottom:1px solid var(--border);">'+
+      '<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;font-size:13px;font-weight:600;margin-bottom:6px;">'+
+        '<span>'+esc(h.month)+'</span>'+
+        '<span class="hint">Доход '+fmt(h.income)+' · Потрачено '+fmt(h.actual)+' · '+(h.leftover>=0?'свободно ':'перерасход ')+fmt(Math.abs(h.leftover))+'</span>'+
+      '</div>'+
+      '<div class="split-bar" style="margin-bottom:3px;"><span style="width:'+incPct.toFixed(1)+'%;background:var(--good)"></span></div>'+
+      '<div class="split-bar" style="margin-bottom:8px;"><span style="width:'+spentPct.toFixed(1)+'%;background:var(--amber)"></span></div>'+
+      '<button class="link" data-role="toggle-month-detail" data-key="'+esc(key)+'">'+(isOpen?'Скрыть категории ▴':'Показать по категориям ▾')+'</button>';
+    if(isOpen){
+      var items = (h.categories||[]).map(function(c){ return {name:c.name, actual:c.actual}; })
+        .concat((h.fixedItems||[]).map(function(it){ return {name:it.name, actual:it.amount}; }));
+      html += '<div style="margin-top:10px;">'+categoryBarsHtml(items)+'</div>';
+    }
+    html += '</div>';
+  });
+  html += '</div></div>';
+
+  return html;
+}
+
+function pageAnalyticsPets(){
+  var total = petAnalyticsTotal();
+  var currentPlan = (STATE.categories.filter(function(c){return c.id==='pets';})[0]||{}).amount||0;
+  var diff = total - currentPlan;
+
+  var html = '<div class="chatnote">'+icon('chat')+'<span>Цена корма для собаки — из данных по Пятёрочке (агрегатор цен, может быть чуть устаревшей). Цена корма для дегу — средняя по российским зоомагазинам: у «Мир Корма» в Калининграде нет открытого онлайн-каталога с ценами. Пришлите чек — поправлю на реальные цифры.</span></div>';
+
+  html += '<div class="stat-grid">'+
+    statCard('purple','list','Корм в этом месяце', fmt(total)) +
+    statCard('amber','tag','Сейчас в плане «Питомцы»', fmt(currentPlan)) +
+    statCard(diff>0?'danger':'good','grid', diff>0?'План занижен на':'Запас в плане', fmt(Math.abs(diff))) +
+    '</div>';
+
+  html += '<div class="card"><h2>Корм по месяцам</h2><div class="sub">Количество и цену можно поправить под реальные покупки.</div>'+
+    '<div class="col-labels" style="grid-template-columns:1fr 90px 90px 90px 32px;"><span>Товар</span><span>Кол-во</span><span>Цена</span><span>Сумма</span><span></span></div>'+
+    '<div class="rows">';
+  STATE.petAnalytics.items.forEach(function(it){
+    html += '<div class="cat-row" style="grid-template-columns:1fr 90px 90px 90px 32px;">'+
+      '<span class="cat-name">'+esc(it.name)+'<span class="delta under">'+esc(it.store)+'</span></span>'+
+      '<input type="number" min="0" step="1" data-role="pet-qty" data-id="'+it.id+'" value="'+it.qty+'">'+
+      '<input type="number" min="0" step="1" data-role="pet-price" data-id="'+it.id+'" value="'+it.price+'">'+
+      '<span class="fact">'+fmt(it.qty*it.price)+'</span>'+
+      '<button class="iconbtn" data-role="remove-pet-item" data-id="'+it.id+'" title="Удалить">✕</button></div>';
+  });
+  html += '</div><button class="btn ghost" data-role="add-pet-item">+ Добавить товар</button>'+
+    '<div class="total-line"><span>Итого</span><span class="v">'+fmt(total)+'</span></div>'+
+    '<div class="suggest-row"><span class="hint">Сейчас в плане «Питомцы» (страница «Категории»): '+fmt(currentPlan)+'.</span>'+
+      '<button class="link" data-role="apply-pets-plan">Подставить '+fmt(total)+' в план «Питомцы»</button></div>'+
+    '</div>';
+
+  return html;
+}
+
+function pageTips(){
+  var html = '<div class="card"><h2>На чём можно сэкономить</h2><div class="tips">';
+  STATE.tips.forEach(function(tip){
+    html += '<div class="tip'+(tip.done?' done':'')+'">'+
+      '<input type="checkbox" data-role="tip-toggle" data-id="'+tip.id+'" '+(tip.done?'checked':'')+'>'+
+      '<div class="txt"><strong>'+esc(tip.title)+'</strong><span>'+esc(tip.text)+'</span></div></div>';
+  });
+  html += '</div></div>';
+  return html;
+}
+
+function pageChecklist(){
+  var html = '<div class="card"><h2>Чек-лист на конец месяца</h2><div class="checklist">';
+  STATE.checklist.forEach(function(item){
+    html += '<label class="check-item'+(item.done?' done':'')+'">'+
+      '<input type="checkbox" data-role="check-toggle" data-id="'+item.id+'" '+(item.done?'checked':'')+'>'+
+      '<span>'+esc(item.text)+'</span></label>';
+  });
+  html += '</div></div>';
+  return html;
+}
+
+// ---------------- Events ----------------
+function afterChange(){
+  saveState();
+  renderShell();
+}
+
+document.addEventListener('change', function(e){
+  var t = e.target, role = t.dataset.role;
+  if(!role) return;
+  var id = t.dataset.id;
+
+  if(role==='income-label'){ var inc=STATE.incomes.filter(function(i){return i.id===id;})[0]; if(inc) inc.label=t.value; }
+  else if(role==='income-amount'){ var inc2=STATE.incomes.filter(function(i){return i.id===id;})[0]; if(inc2){ inc2.amount=parseFloat(t.value)||0; autoDistribute(); } }
+  else if(role==='cat-amount'){ var c=STATE.categories.filter(function(c){return c.id===id;})[0]; if(c) c.amount=parseFloat(t.value)||0; }
+  else if(role==='split'){ STATE.splitTargets[t.dataset.key]=parseFloat(t.value)||0; }
+  else if(role==='tip-toggle'){ var tip=STATE.tips.filter(function(x){return x.id===id;})[0]; if(tip) tip.done=t.checked; }
+  else if(role==='check-toggle'){ var ci=STATE.checklist.filter(function(x){return x.id===id;})[0]; if(ci) ci.done=t.checked; }
+  else if(role==='tx-desc-edit'){ var tx=STATE.transactions.filter(function(x){return x.id===id;})[0]; if(tx) tx.description=t.value; }
+  else if(role==='tx-amount-edit'){ var tx2=STATE.transactions.filter(function(x){return x.id===id;})[0]; if(tx2) tx2.amount=parseFloat(t.value)||0; }
+  else if(role==='tx-cat-edit'){ var tx3=STATE.transactions.filter(function(x){return x.id===id;})[0]; if(tx3) tx3.category=t.value; }
+  else if(role==='fixed-name'){ var fi=STATE.fixedExpenses.items.filter(function(x){return x.id===id;})[0]; if(fi) fi.name=t.value; }
+  else if(role==='fixed-amount'){ var fi2=STATE.fixedExpenses.items.filter(function(x){return x.id===id;})[0]; if(fi2) fi2.amount=parseFloat(t.value)||0; }
+  else if(role==='fixed-note'){ var fi3=STATE.fixedExpenses.items.filter(function(x){return x.id===id;})[0]; if(fi3) fi3.note=t.value; }
+  else if(role==='fixed-paid'){ var fi4=STATE.fixedExpenses.items.filter(function(x){return x.id===id;})[0]; if(fi4) fi4.paid=t.checked; }
+  else if(role==='sub-name'){ var sb=STATE.fixedExpenses.subscriptions.filter(function(x){return x.id===id;})[0]; if(sb) sb.name=t.value; }
+  else if(role==='sub-amount'){ var sb2=STATE.fixedExpenses.subscriptions.filter(function(x){return x.id===id;})[0]; if(sb2) sb2.amount=parseFloat(t.value)||0; }
+  else if(role==='sub-paid'){ var sb3=STATE.fixedExpenses.subscriptions.filter(function(x){return x.id===id;})[0]; if(sb3) sb3.paid=t.checked; }
+  else if(role==='car-percent'){ STATE.fixedExpenses.carPercent=parseFloat(t.value)||0; }
+  else if(role==='debt-name'){ var d=STATE.debts.filter(function(x){return x.id===id;})[0]; if(d) d.name=t.value; }
+  else if(role==='loan-name'){ var ln=STATE.loans.filter(function(x){return x.id===id;})[0]; if(ln) ln.name=t.value; }
+  else if(role==='loan-amount'){ var ln1=STATE.loans.filter(function(x){return x.id===id;})[0]; if(ln1) ln1.amount=parseFloat(t.value)||0; }
+  else if(role==='loan-rate'){ var ln2=STATE.loans.filter(function(x){return x.id===id;})[0]; if(ln2) ln2.rate=parseFloat(t.value)||0; }
+  else if(role==='loan-term'){ var ln3=STATE.loans.filter(function(x){return x.id===id;})[0]; if(ln3) ln3.termMonths=parseFloat(t.value)||0; }
+  else if(role==='loan-start'){ var ln4=STATE.loans.filter(function(x){return x.id===id;})[0]; if(ln4) ln4.startDate=t.value; }
+  else if(role==='extra-date' || role==='extra-amount'){
+    var xl=STATE.loans.filter(function(x){return x.id===t.dataset.loan;})[0];
+    var xe=xl && (xl.extras||[]).filter(function(x){return x.id===id;})[0];
+    if(xe){ if(role==='extra-date') xe.date=t.value; else xe.amount=parseFloat(t.value)||0; }
+  }
+  else if(role==='loan-override'){ var ln5=STATE.loans.filter(function(x){return x.id===id;})[0]; if(ln5) ln5.paymentOverride=parseFloat(t.value)||0; }
+  else if(role==='debt-limit'){ var d2=STATE.debts.filter(function(x){return x.id===id;})[0]; if(d2) d2.limit=parseFloat(t.value)||0; }
+  else if(role==='debt-available'){ var d3=STATE.debts.filter(function(x){return x.id===id;})[0]; if(d3) d3.available=parseFloat(t.value)||0; }
+  else if(role==='debt-payment'){ var d4=STATE.debts.filter(function(x){return x.id===id;})[0]; if(d4) d4.payment=parseFloat(t.value)||0; }
+  else if(role==='debt-paid'){ var d5=STATE.debts.filter(function(x){return x.id===id;})[0]; if(d5) d5.paid=t.checked; }
+  else if(role==='goal-name'){ var g=STATE.savingsGoals.filter(function(x){return x.id===id;})[0]; if(g) g.name=t.value; }
+  else if(role==='goal-target'){ var g2=STATE.savingsGoals.filter(function(x){return x.id===id;})[0]; if(g2){ g2.target=parseFloat(t.value)||0; redistributeIfUnconfirmed(); } }
+  else if(role==='goal-date'){ var g6=STATE.savingsGoals.filter(function(x){return x.id===id;})[0]; if(g6){ g6.deadline=t.value||''; redistributeIfUnconfirmed(); } }
+  else if(role==='goal-current'){ var g3=STATE.savingsGoals.filter(function(x){return x.id===id;})[0]; if(g3) g3.current=parseFloat(t.value)||0; }
+  else if(role==='goal-contribution'){ var g4=STATE.savingsGoals.filter(function(x){return x.id===id;})[0]; if(g4) g4.contribution=parseFloat(t.value)||0; }
+  else if(role==='goal-paid'){ var g5=STATE.savingsGoals.filter(function(x){return x.id===id;})[0]; if(g5) g5.paid=t.checked; }
+  else if(role==='cushion-current'){ STATE.cushionGoal.current=parseFloat(t.value)||0; }
+  else if(role==='cushion-target-months'){ STATE.cushionGoal.targetMonths=parseFloat(t.value)||0; }
+  else if(role==='cushion-contribution'){ STATE.cushionGoal.contribution=parseFloat(t.value)||0; }
+  else if(role==='cushion-paid'){ STATE.cushionGoal.paid=t.checked; }
+  else if(role==='food-multiplier'){ STATE.foodAnalytics.multiplier=parseFloat(t.value)||1; }
+  else if(role==='pet-qty'){ var pi=STATE.petAnalytics.items.filter(function(x){return x.id===id;})[0]; if(pi) pi.qty=parseFloat(t.value)||0; }
+  else if(role==='pet-price'){ var pi2=STATE.petAnalytics.items.filter(function(x){return x.id===id;})[0]; if(pi2) pi2.price=parseFloat(t.value)||0; }
+  else if(role==='month-label'){ STATE.month=t.value; }
+  else return;
+  afterChange();
+});
+
+document.addEventListener('click', function(e){
+  var btn = e.target.closest('[data-role]');
+  if(!btn) return;
+  var role = btn.dataset.role;
+  if(role==='nav-item') return; // handled in renderShell
+
+  if(role==='add-income'){
+    STATE.incomes.push({id:uid('inc'), label:'Доход '+(STATE.incomes.length+1), amount:0});
+    autoDistribute(); afterChange();
+  } else if(role==='remove-income'){
+    STATE.incomes = STATE.incomes.filter(function(i){return i.id!==btn.dataset.id;});
+    if(STATE.incomes.length===0) STATE.incomes.push({id:uid('inc'),label:'Доход 1',amount:0});
+    autoDistribute(); afterChange();
+  } else if(role==='redistribute'){
+    autoDistribute(); afterChange();
+  } else if(role==='toggle-month-detail'){
+    var key = btn.dataset.key;
+    expandedMonths[key] = !expandedMonths[key];
+    renderPage();
+  } else if(role==='add-tx'){
+    var desc = document.getElementById('tx-desc').value.trim();
+    var amount = parseFloat(document.getElementById('tx-amount').value)||0;
+    var cat = document.getElementById('tx-category').value;
+    if(!desc || amount<=0){ alert('Укажите описание и сумму больше нуля.'); return; }
+    STATE.transactions.push({id:uid('tx'), description:desc, amount:amount, category:cat, addedAt:new Date().toISOString()});
+    afterChange();
+  } else if(role==='remove-tx'){
+    STATE.transactions = STATE.transactions.filter(function(t){return t.id!==btn.dataset.id;});
+    afterChange();
+  } else if(role==='add-fixed'){
+    STATE.fixedExpenses.items.push({id:uid('fx'), name:'Новый платёж', amount:0, note:'', paid:false});
+    afterChange();
+  } else if(role==='remove-fixed'){
+    STATE.fixedExpenses.items = STATE.fixedExpenses.items.filter(function(i){return i.id!==btn.dataset.id;});
+    afterChange();
+  } else if(role==='add-sub'){
+    var sName = document.getElementById('new-sub-name').value.trim();
+    var sAmount = parseFloat(document.getElementById('new-sub-amount').value)||0;
+    if(!sName || sAmount<=0){ alert('Укажите название и сумму подписки.'); return; }
+    STATE.fixedExpenses.subscriptions.push({id:uid('sub'), name:sName, amount:sAmount, paid:false});
+    afterChange();
+  } else if(role==='remove-sub'){
+    STATE.fixedExpenses.subscriptions = STATE.fixedExpenses.subscriptions.filter(function(s){return s.id!==btn.dataset.id;});
+    afterChange();
+  } else if(role==='add-loan'){
+    STATE.loans.push({id:uid('loan'), name:'Новый кредит', amount:0, rate:0, startDate:'', termMonths:0, paymentOverride:0});
+    afterChange();
+  } else if(role==='add-extra'){
+    var al = STATE.loans.filter(function(l){return l.id===btn.dataset.loan;})[0];
+    if(al){ if(!al.extras) al.extras=[]; al.extras.push({id:uid('ex'), date:new Date().toISOString().slice(0,10), amount:0}); }
+    afterChange();
+  } else if(role==='remove-extra'){
+    var rl = STATE.loans.filter(function(l){return l.id===btn.dataset.loan;})[0];
+    if(rl) rl.extras = (rl.extras||[]).filter(function(x){return x.id!==btn.dataset.id;});
+    afterChange();
+  } else if(role==='toggle-sched'){
+    SCHED_OPEN[btn.dataset.loan] = !SCHED_OPEN[btn.dataset.loan];
+    renderPage();
+  } else if(role==='remove-loan'){
+    STATE.loans = STATE.loans.filter(function(l){return l.id!==btn.dataset.id;});
+    afterChange();
+  } else if(role==='sync-loans'){
+    var loansSum = Math.round(loansMonthlyTotal());
+    var credItem = STATE.fixedExpenses.items.filter(function(it){return it.name==='Кредиты';})[0];
+    if(credItem){ credItem.amount = loansSum; }
+    else { STATE.fixedExpenses.items.unshift({id:uid('fx'), name:'Кредиты', amount:loansSum, note:'Сумма платежей со страницы «Кредиты»', paid:false}); }
+    afterChange();
+  } else if(role==='add-debt'){
+    STATE.debts.push({id:uid('debt'), name:'Новый кредит', limit:0, available:0, payment:0, paid:false});
+    afterChange();
+  } else if(role==='remove-debt'){
+    STATE.debts = STATE.debts.filter(function(d){return d.id!==btn.dataset.id;});
+    afterChange();
+  } else if(role==='add-goal'){
+    STATE.savingsGoals.push({id:uid('goal'), name:'Новая цель', target:0, current:0, contribution:0, deadline:'', paid:false});
+    afterChange();
+  } else if(role==='remove-goal'){
+    STATE.savingsGoals = STATE.savingsGoals.filter(function(g){return g.id!==btn.dataset.id;});
+    afterChange();
+  } else if(role==='apply-food-plan'){
+    var foodCat = STATE.categories.filter(function(c){return c.id==='food';})[0];
+    if(foodCat) foodCat.amount = Math.round(foodBasketAdjustedTotal());
+    afterChange();
+  } else if(role==='apply-pets-plan'){
+    var petsCat = STATE.categories.filter(function(c){return c.id==='pets';})[0];
+    if(petsCat) petsCat.amount = Math.round(petAnalyticsTotal());
+    afterChange();
+  } else if(role==='add-pet-item'){
+    STATE.petAnalytics.items.push({id:uid('pet'), name:'Новый товар', store:'', qty:1, unit:'уп/мес', price:0});
+    afterChange();
+  } else if(role==='remove-pet-item'){
+    STATE.petAnalytics.items = STATE.petAnalytics.items.filter(function(it){return it.id!==btn.dataset.id;});
+    afterChange();
+  } else if(role==='export'){
+    exportJson();
+  } else if(role==='import'){
+    document.getElementById('import-input').click();
+  }
+});
+
+function exportJson(){
+  try{
+    var blob = new Blob([JSON.stringify(STATE, null, 2)], {type:'application/json'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = 'amber-budget-'+(new Date().toISOString().slice(0,10))+'.json';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }catch(e){ alert('Не удалось экспортировать файл.'); }
+}
+
+function handleImportFile(e){
+  var file = e.target.files && e.target.files[0];
+  if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(){
+    try{
+      var parsed = JSON.parse(reader.result);
+      if(!parsed || !parsed.incomes || !parsed.categories || !parsed.fixedExpenses || !parsed.debts || !parsed.savingsGoals) throw new Error('bad shape');
+      STATE = parsed;
+      afterChange();
+    }catch(err){
+      alert('Файл не похож на резервную копию этого бюджета.');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+// ---------------- Boot ----------------
+applyTheme();
+renderShell();
+
+})();
+</script>
+</body>
+</html>
